@@ -45,69 +45,70 @@
       if(saved!==null) autoRun.checked=saved==='true';
       autoRun.addEventListener('change',function(){localStorage.setItem('alnafar_autorun',autoRun.checked)});
 
-      var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
-      if(!m){
+      var uaFull=navigator.userAgent;
+      var match=uaFull.match(/PlayStation 4[ \/]([\d.]+)/i);
+      var isPS4=match!==null;
+      var fwVersion=isPS4?match[1]:'Unknown';
+      var fwNum=parseFloat(fwVersion);
+
+      if(!isPS4){
         msgsEl.innerHTML='<span class="bad">يتطلب PlayStation 4</span>';
         logMsg('[error] not a PS4','bad');
         return;
       }
-      var major=parseInt(m[1],10);
-      var minor=parseInt(m[2],16);
-      var ms=minor.toString(16);
-      if(ms.length<2) ms='0'+ms;
-      var key=m[1]+'.'+ms;
-      var fwnum=major*100+parseInt(ms,10);
-      logMsg('[detect] firmware: '+key,'info');
+      logMsg('[detect] firmware: '+fwVersion,'info');
 
-      var src,type,cb,label;
-      if(fwnum<=852){src='700/alert.js';type='module';label='7.00-8.52'}
-      else if(fwnum<=960){src='900/alert.js';type='module';label='9.00-9.60'}
-      else if(fwnum<=1102){src='css/main.js';type='';label='10.00-11.02';cb=function(){setTimeout(function(){doJb()},500)}}
-      else if(fwnum<=1202){src='slopkit/chain_lapse.js';type='module';label='11.50-12.02'}
-      else if(fwnum>=1250){src='slopkit/chain_poops.js';type='module';label='12.50-13.00'}
-      else{
-        msgsEl.innerHTML='<span class="bad">الفيرموير '+key+' غير مدعوم</span>';
-        logMsg('[error] firmware not supported','bad');
-        return;
-      }
-      logMsg('[route] chain: '+label+' → '+src,'ok');
-
-      function doLoad(attempt){
-        attempt=attempt||1;
-        msgsEl.innerHTML='جاري تحميل '+label+'...';
+      // Match original GamerHack logic exactly
+      function loadExploit(src,type,cb){
+        msgsEl.innerHTML='جاري تحميل GoldHEN v2.4b18.10... انتظر';
         msgsEl.className='warn';
-        logMsg('[exploit] loading attempt '+attempt,'warn');
         var s=document.createElement('script');
         s.src=src;if(type) s.type=type;
-        s.onload=function(){logMsg('[exploit] script loaded','ok')};
         s.onerror=function(){
-          s.remove();
-          if(attempt<3){
-            logMsg('[error] load failed, retry '+attempt+'/3','bad');
-            setTimeout(function(){doLoad(attempt+1)},attempt*900);
-          }else{
-            msgsEl.innerHTML='<span class="bad">فشل التحميل — أعد المحاولة</span>';
-            logMsg('[error] exploit failed','bad');
-          }
+          msgsEl.innerHTML='<span class="bad">محتوى غير موجود — امسح بيانات المتصفح وأعد تثبيت الكاش</span>';
+          logMsg('[error] script not found: '+src,'bad');
         };
+        if(cb) s.onload=cb;
         document.head.appendChild(s);
       }
 
-      if(!autoRun.checked){
-        msgsEl.innerHTML='جاهز — اضغط للتشغيل';
-        msgsEl.className='ok';
-        logMsg('[wait] auto-run disabled, waiting for tap','info');
-        function fire(){
-          document.removeEventListener('click',fire);
-          document.removeEventListener('keydown',fire);
-          doLoad(1);
+      // Cache check — same as original GamerHack
+      if(window.applicationCache.status=='0'){
+        logMsg('[cache] not cached, redirecting...','info');
+        if(fwNum>=7.00&&fwNum<=8.52){window.location.replace('cache700.html')}
+        else if(fwNum>=9.00&&fwNum<=9.60){window.location.replace('cache900.html')}
+        else if(fwNum>=10.00&&fwNum<=11.02){window.location.replace('cachecss.html')}
+        else if(fwNum>=11.50&&fwNum<=13.00){window.location.replace('cacheslopkit.html')}
+        else{
+          msgsEl.innerHTML='<span class="bad">الفيرموير '+fwVersion+' غير مدعوم</span>';
+          logMsg('[error] firmware not supported','bad');
         }
-        document.addEventListener('click',fire);
-        document.addEventListener('keydown',fire);
         return;
       }
 
-      doLoad(1);
+      // Load exploit — same as original GamerHack
+      logMsg('[cache] cached, loading exploit...','ok');
+      if(fwNum>=7.00&&fwNum<=8.52){
+        loadExploit('700/alert.js','module');
+      }
+      else if(fwNum>=9.00&&fwNum<=9.60){
+        loadExploit('900/alert.js','module');
+      }
+      else if(fwNum>=10.00&&fwNum<=11.02){
+        loadExploit('css/main.js','',function(){
+          setTimeout(function(){doJb()},500);
+        });
+      }
+      else if(fwNum>=11.50&&fwNum<=12.02){
+        loadExploit('slopkit/chain_lapse.js','module');
+      }
+      else if(fwNum>=12.50&&fwNum<=13.00){
+        loadExploit('slopkit/chain_poops.js','module');
+      }
+      else{
+        msgsEl.innerHTML='<span class="bad">الفيرموير '+fwVersion+' غير مدعوم</span>';
+        logMsg('[error] firmware not supported','bad');
+      }
     })();
   </script>
 </body>
