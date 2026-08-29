@@ -1,36 +1,50 @@
 <!DOCTYPE html>
-<html lang="en" manifest="cache.manifest">
+<html lang="ar" dir="ltr" manifest="cache.manifest">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>alnafar | PS4 Exploit Host</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:15px/1.5 'Chakra Petch','Segoe UI',system-ui,sans-serif}
+  html{overflow:hidden}
+  html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:18px/1.6 'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif}
   body{background:url('background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
-  #brand{text-align:center;padding:14px 16px;background:rgba(8,11,26,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.12)}
-  #brand h1{font-size:18px;font-weight:700;letter-spacing:.18em;color:#e2e8f0;margin:0;text-shadow:0 0 20px rgba(0,212,255,.3)}
+
+  #brand{text-align:center;padding:18px;background:rgba(8,11,26,.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.15)}
+  #brand h1{font-size:28px;font-weight:700;letter-spacing:.15em;color:#e2e8f0;margin:0;text-shadow:0 0 25px rgba(0,212,255,.4)}
   #brand h1 span{color:#00d4ff}
-  #brand small{display:block;font-size:10px;color:#6b7280;margin-top:2px;letter-spacing:.1em}
-  #wrap{padding:20px 18px;max-width:520px;margin:0 auto}
-  #state{font-size:20px;font-weight:700;margin:0 0 10px;transition:color .3s}
-  #det{font-size:13px;color:#9ca3af;margin:0 0 8px;line-height:1.6}
+  #brand small{display:block;font-size:14px;color:#6b7280;margin-top:4px;letter-spacing:.05em}
+
+  #wrap{padding:20px 16px;max-width:520px;margin:0 auto}
+
+  #msgs{font-size:26px;font-weight:700;margin:0 0 16px;text-align:center;line-height:1.4}
+  #det{font-size:16px;color:#9ca3af;margin:0 0 10px;text-align:center;line-height:1.6}
   #det b{color:#e2e8f0;font-weight:600}
-  #cache{font-size:12px;color:#6b7280;margin:0 0 16px;min-height:14px}
+  #cache{font-size:14px;color:#6b7280;margin:0 0 16px;text-align:center;min-height:16px}
   #cache.cacheok{color:#34d399}
-  .ok{color:#34d399}
-  .bad{color:#f87171}
-  .warn{color:#fbbf24}
+  .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
+
+  #logbox{margin-top:16px;padding:14px;border:1px solid rgba(0,212,255,.15);border-radius:8px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);max-height:180px;overflow-y:auto;font-size:13px;font-family:'Chakra Petch',monospace;color:#9ca3af;line-height:1.7}
+  #logbox .ok{color:#34d399}
+  #logbox .bad{color:#f87171}
+  #logbox .warn{color:#fbbf24}
+  #logbox .info{color:#60a5fa}
+
   .unsupported{
-    margin-top:20px;padding:20px;border:1px solid rgba(0,212,255,.15);
-    border-radius:10px;background:rgba(8,11,26,.7);backdrop-filter:blur(6px);text-align:center;
+    margin-top:24px;padding:22px;border:1px solid rgba(0,212,255,.15);
+    border-radius:10px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);text-align:center;
   }
-  .unsupported h2{font-size:15px;color:#e2e8f0;margin:0 0 8px;font-weight:600}
-  .unsupported p{font-size:12px;color:#9ca3af;line-height:1.7;margin:0}
-  .unsupported .fw-list{margin-top:12px;text-align:left;font-size:11px;color:#6b7280;line-height:1.8}
+  .unsupported h2{font-size:20px;color:#e2e8f0;margin:0 0 10px;font-weight:600}
+  .unsupported p{font-size:16px;color:#9ca3af;line-height:1.7;margin:0}
+  .unsupported .fw-list{margin-top:14px;text-align:left;font-size:14px;color:#6b7280;line-height:1.9}
   .unsupported .fw-list b{color:#9ca3af}
-  #footer{text-align:center;padding:16px;font-size:11px;color:#374151;line-height:1.8}
+
+  .checkbox-wrap{margin-top:18px;text-align:center}
+  .checkbox-wrap label{font-size:16px;color:#9ca3af;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .checkbox-wrap input[type="checkbox"]{width:18px;height:18px;accent-color:#00d4ff;cursor:pointer}
+
+  #footer{text-align:center;padding:20px;font-size:13px;color:#374151;line-height:1.8}
   #footer a{color:#00d4ff;text-decoration:none;font-weight:600}
   #footer a:hover{text-decoration:underline}
   #footer .sep{color:#1f2937;margin:0 4px}
@@ -38,27 +52,53 @@
 </head>
 <body>
 
+<h1 id="msgs" style="display:none"></h1>
+
 <div id="brand">
   <h1><span>al</span>nafar</h1>
   <small>PS4 Exploit Host</small>
 </div>
 
 <div id="wrap">
-  <div id="state">scanning device...</div>
+  <div id="msgs2">جاري الفحص...</div>
   <div id="det"></div>
   <div id="cache"></div>
   <div id="动态"></div>
+  <div id="logbox"></div>
+
+  <div class="checkbox-wrap">
+    <label>
+      <input type="checkbox" id="autoRun" checked>
+      تشغيل تلقائي عند الفتح
+    </label>
+  </div>
 </div>
 
 <div id="footer">
   <a href="https://github.com/CODE-NAME-IN-B">CODE-NAME-IN-B</a>
   <span class="sep">|</span>
-  Partnership: <b>Al-Sharada Electronics</b>
+  شراكة: <b>الشاردة للإلكترونيات</b>
 </div>
 
 <script>
 (function(){
   'use strict';
+
+  // Global msgs element for exploit scripts (lapse.js etc.)
+  var msgsEl=document.getElementById('msgs');
+  // Also expose as global for scripts that reference it directly
+  window.msgs=msgsEl;
+  window.msgs2=document.getElementById('msgs2');
+
+  var logEl=document.getElementById('logbox');
+
+  function logMsg(msg,type){
+    var c=type||'info';
+    logEl.innerHTML+='<span class="'+c+'">'+msg+'</span>\n';
+    logEl.scrollTop=logEl.scrollHeight;
+  }
+
+  logMsg('[alnafar] host initialized','info');
 
   var ROUTES=[
     {key_min:700,key_max:852,label:'7.00-8.52',script:'g2all/700/alert.js',module:true},
@@ -68,12 +108,12 @@
     {key_min:1250,key_max:1300,label:'12.50-13.00',script:'g2all/slopkit/chain_poops.js',module:true}
   ];
 
-  var stateEl=document.getElementById('state');
+  var stateEl=document.getElementById('msgs2');
   var detEl=document.getElementById('det');
   var cacheEl=document.getElementById('cache');
   var infoEl=document.getElementById('动态');
 
-  function setState(t,c){stateEl.textContent=t;stateEl.className=c||''}
+  function setState(t,c){stateEl.textContent=t;stateEl.className=c||'';msgsEl.textContent=t;msgsEl.className=c||''}
   function setCache(t,ok){cacheEl.textContent=t;cacheEl.className=ok?'cacheok':''}
 
   var params=new URLSearchParams(location.search);
@@ -88,6 +128,7 @@
     if(ms.length<2) ms='0'+ms;
     key=m[1]+'.'+ms;
     fwnum=major*100+parseInt(ms,10);
+    logMsg('[detect] firmware: '+key+' ('+fwnum+')','info');
   }
 
   function findRoute(fw){
@@ -101,14 +142,16 @@
   if(forced==='lapse'||forced==='poops'){
     route={script:forced==='lapse'?'g2all/slopkit/chain_lapse.js':'g2all/slopkit/chain_poops.js',module:true,label:forced};
     detEl.innerHTML='firmware <b>'+key+'</b> &middot; chain <b>'+forced+'</b> &middot; forced';
+    logMsg('[route] forced chain: '+forced,'warn');
   }else if(!key){
     setState('','');
     detEl.innerHTML='';
+    logMsg('[error] not a PS4 — showing info page','warn');
     infoEl.innerHTML='<div class="unsupported">'+
-      '<h2>this page is built for playstation 4</h2>'+
-      '<p>open this address from your PS4 browser to jailbreak your console.</p>'+
+      '<h2>هذه الصفحة مخصصة لجهاز PlayStation 4</h2>'+
+      '<p>افتح هذا الرابط من متصفح PS4 على جهازك.</p>'+
       '<div class="fw-list">'+
-        '<b>supported firmwares:</b><br>'+
+        '<b>الفيرموير المدعوم:</b><br>'+
         '7.00 - 8.52 &middot; 9.00 - 9.60 &middot; 10.00 - 11.02<br>'+
         '11.50 - 12.02 &middot; 12.50 - 13.00'+
       '</div>'+
@@ -118,14 +161,16 @@
     route=findRoute(fwnum);
     if(route){
       detEl.innerHTML='firmware <b>'+key+'</b> &middot; chain <b>'+route.label+'</b>';
+      logMsg('[route] found: '+route.label+' → '+route.script,'ok');
     }else{
       setState('','');
       detEl.innerHTML='';
+      logMsg('[error] firmware '+key+' not supported','bad');
       infoEl.innerHTML='<div class="unsupported">'+
-        '<h2>firmware '+key+' is not supported yet</h2>'+
-        '<p>no working exploit chain for this version.</p>'+
+        '<h2>الفيرموير '+key+' غير مدعوم بعد</h2>'+
+        '<p>لا يوجد exploit متاح لهذه الإصدارة.</p>'+
         '<div class="fw-list">'+
-          '<b>supported firmwares:</b><br>'+
+          '<b>الفيرموير المدعوم:</b><br>'+
           '7.00 - 8.52 &middot; 9.00 - 9.60 &middot; 10.00 - 11.02<br>'+
           '11.50 - 12.02 &middot; 12.50 - 13.00'+
         '</div>'+
@@ -134,27 +179,63 @@
     }
   }
 
+  // Auto-run checkbox
+  var autoRun=document.getElementById('autoRun');
+  var autoRunKey='alnafar_autorun';
+  var saved=localStorage.getItem(autoRunKey);
+  if(saved!==null) autoRun.checked=saved==='true';
+  autoRun.addEventListener('change',function(){
+    localStorage.setItem(autoRunKey,autoRun.checked);
+    logMsg('[settings] auto-run: '+(autoRun.checked?'enabled':'disabled'),'info');
+  });
+  logMsg('[settings] auto-run: '+(autoRun.checked?'enabled':'disabled'),'info');
+
+  // Exploit chain
   var running=false;
   function loadScript(rt,attempt){
     attempt=attempt||1;
     if(running) return;
+
+    if(!autoRun.checked){
+      setState('جاهز — اضغط للتشغيل','ok');
+      logMsg('[wait] auto-run disabled, waiting for tap','info');
+      function fire(){
+        window.removeEventListener('click',fire);
+        window.removeEventListener('keydown',fire);
+        running=true;
+        setState('loading '+rt.label+'...','warn');
+        logMsg('[exploit] starting chain: '+rt.label,'warn');
+        doLoad(rt,1);
+      }
+      window.addEventListener('click',fire);
+      window.addEventListener('keydown',fire);
+      return;
+    }
+
     running=true;
     setState('loading '+rt.label+'...','warn');
+    logMsg('[exploit] starting chain: '+rt.label,'warn');
+    doLoad(rt,attempt);
+  }
 
+  function doLoad(rt,attempt){
     var s=document.createElement('script');
     s.async=false;s.src=rt.script;
     if(rt.module) s.type='module';
     s.onload=function(){
       setState('chain ready','ok');
+      logMsg('[exploit] script loaded: '+rt.script,'ok');
       if(rt.invoke&&typeof window[rt.invoke]==='function') window[rt.invoke]();
     };
     s.onerror=function(){
       s.remove();
       if(attempt<3){
         setCache('retrying ('+attempt+'/3)...');
-        setTimeout(function(){loadScript(rt,attempt+1)},attempt*900);
+        logMsg('[error] load failed, retry '+attempt+'/3','bad');
+        setTimeout(function(){doLoad(rt,attempt+1)},attempt*900);
       }else{
         setState('failed','bad');
+        logMsg('[error] could not load '+rt.script,'bad');
         setCache('could not load exploit. clear cache and reload.');
       }
     };
@@ -163,6 +244,7 @@
 
   function waitForTap(msg,action){
     setState(msg,'warn');
+    logMsg('[tap] '+msg,'warn');
     function fire(){
       window.removeEventListener('click',fire);
       window.removeEventListener('keydown',fire);
@@ -174,44 +256,61 @@
 
   function go(){loadScript(route)}
 
+  // Cache
   var ac=window.applicationCache;
   if(!ac||!document.documentElement.hasAttribute('manifest')){
+    logMsg('[cache] no manifest, running directly','info');
     go();
   }else if(!navigator.onLine){
     setCache('offline mode',true);
+    logMsg('[cache] offline, using cache','info');
     go();
   }else if(ac.status===ac.IDLE){
     setCache('cached',true);
+    logMsg('[cache] already cached','ok');
     go();
   }else if(ac.status===ac.UPDATEREADY){
     try{ac.swapCache()}catch(e){}
     setCache('update ready',true);
-    waitForTap('tap or press X to reload',function(){location.reload()});
+    logMsg('[cache] update downloaded','ok');
+    waitForTap('UPDATE READY — tap or press X to reload',function(){location.reload()});
   }else{
     setCache('checking cache...');
-    ac.addEventListener('downloading',function(){setCache('downloading for offline use...')},false);
+    logMsg('[cache] checking...','info');
+    ac.addEventListener('downloading',function(){
+      setCache('downloading for offline use...');
+      logMsg('[cache] downloading...','info');
+    },false);
     ac.addEventListener('progress',function(e){
-      if(e&&e.total) setCache(Math.round((e.loaded/e.total)*100)+'%');
+      if(e&&e.total){
+        var p=Math.round((e.loaded/e.total)*100);
+        setCache(p+'%');
+      }
     },false);
     ac.addEventListener('cached',function(){
       setCache('cached',true);
-      waitForTap('tap or press X to run',go);
+      logMsg('[cache] cached successfully','ok');
+      waitForTap('CACHED — tap or press X to run',go);
     },false);
     ac.addEventListener('updateready',function(){
       try{ac.swapCache()}catch(e){}
       setCache('update ready',true);
-      waitForTap('tap or press X to reload',function(){location.reload()});
+      logMsg('[cache] update ready','ok');
+      waitForTap('UPDATE READY — tap or press X to reload',function(){location.reload()});
     },false);
     ac.addEventListener('noupdate',function(){
       setCache('cached',true);
+      logMsg('[cache] no update','ok');
       go();
     },false);
     ac.addEventListener('error',function(){
       setCache('cache unavailable');
+      logMsg('[cache] error','bad');
       waitForTap('tap to run anyway',go);
     },false);
     ac.addEventListener('obsolete',function(){
       setCache('cache obsolete');
+      logMsg('[cache] obsolete','warn');
       waitForTap('tap to run',go);
     },false);
   }

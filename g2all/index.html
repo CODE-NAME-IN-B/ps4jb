@@ -1,41 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>alnafar | GoldHEN</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:15px/1.5 'Chakra Petch','Segoe UI',system-ui,sans-serif}
+    html{overflow:hidden}
+    html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:18px/1.6 'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif}
     body{background:url('../background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
-    #brand{text-align:center;padding:14px 16px;background:rgba(8,11,26,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.12)}
-    #brand h1{font-size:18px;font-weight:700;letter-spacing:.18em;color:#e2e8f0;margin:0}
+    #brand{text-align:center;padding:18px;background:rgba(8,11,26,.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.15)}
+    #brand h1{font-size:28px;font-weight:700;letter-spacing:.15em;color:#e2e8f0;margin:0}
     #brand h1 span{color:#00d4ff}
-    #wrap{padding:20px 18px;max-width:520px;margin:0 auto}
-    #state{font-size:18px;font-weight:700;margin:0 0 8px}
-    #det{font-size:13px;color:#9ca3af;margin:0 0 8px}
+    #wrap{padding:20px 16px;max-width:520px;margin:0 auto}
+    #msgs{font-size:26px;font-weight:700;margin:0 0 10px}
+    #det{font-size:16px;color:#9ca3af;margin:0 0 8px}
     #det b{color:#e2e8f0;font-weight:600}
-    #cache{font-size:12px;color:#6b7280;margin:0 0 12px;min-height:14px}
+    #cache{font-size:14px;color:#6b7280;margin:0 0 12px;min-height:16px}
     #cache.cacheok{color:#34d399}
     .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
+    #logbox{margin-top:16px;padding:14px;border:1px solid rgba(0,212,255,.15);border-radius:8px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);max-height:180px;overflow-y:auto;font-size:13px;font-family:'Chakra Petch',monospace;color:#9ca3af;line-height:1.7}
+    #logbox .ok{color:#34d399}#logbox .bad{color:#f87171}#logbox .warn{color:#fbbf24}#logbox .info{color:#60a5fa}
+    .checkbox-wrap{margin-top:18px;text-align:center}
+    .checkbox-wrap label{font-size:16px;color:#9ca3af;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+    .checkbox-wrap input[type="checkbox"]{width:18px;height:18px;accent-color:#00d4ff;cursor:pointer}
   </style>
 </head>
 <body>
+  <h1 id="msgs" style="display:none"></h1>
   <div id="brand"><h1><span>al</span>nafar</h1></div>
   <div id="wrap">
-    <div id="state">loading exploit...</div>
+    <div id="msgs2">جاري التحميل...</div>
     <div id="det"></div>
     <div id="cache"></div>
+    <div id="logbox"></div>
+    <div class="checkbox-wrap">
+      <label><input type="checkbox" id="autoRun" checked> تشغيل تلقائي</label>
+    </div>
   </div>
   <script>
     (function(){
       'use strict';
+      var msgsEl=document.getElementById('msgs');
+      window.msgs=msgsEl;
+      var logEl=document.getElementById('logbox');
+      function logMsg(msg,type){logEl.innerHTML+='<span class="'+(type||'info')+'">'+msg+'</span>\n';logEl.scrollTop=logEl.scrollHeight}
+      logMsg('[alnafar] g2all initialized','info');
+
+      var autoRun=document.getElementById('autoRun');
+      var saved=localStorage.getItem('alnafar_autorun');
+      if(saved!==null) autoRun.checked=saved==='true';
+      autoRun.addEventListener('change',function(){localStorage.setItem('alnafar_autorun',autoRun.checked)});
+
       var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
       if(!m){
-        document.getElementById('state').textContent='playstation 4 required';
-        document.getElementById('state').className='bad';
-        document.getElementById('det').innerHTML='open this page from your PS4 browser';
+        document.getElementById('msgs2').textContent='يتطلب PlayStation 4';
+        document.getElementById('msgs2').className='bad';
+        document.getElementById('det').innerHTML='افتح هذه الصفحة من متصفح PS4';
+        logMsg('[error] not a PS4','bad');
         return;
       }
       var major=parseInt(m[1],10);
@@ -45,27 +68,59 @@
       var key=m[1]+'.'+ms;
       var fwnum=major*100+parseInt(ms,10);
       document.getElementById('det').innerHTML='firmware <b>'+key+'</b>';
+      logMsg('[detect] firmware: '+key,'info');
 
-      var src,type,cb;
-      if(fwnum<=852){src='700/alert.js';type='module'}
-      else if(fwnum<=960){src='900/alert.js';type='module'}
-      else if(fwnum<=1102){src='css/main.js';type='';cb=function(){setTimeout(function(){doJb()},500)}}
-      else if(fwnum<=1202){src='slopkit/chain_lapse.js';type='module'}
-      else if(fwnum>=1250){src='slopkit/chain_poops.js';type='module'}
+      var src,type,cb,label;
+      if(fwnum<=852){src='700/alert.js';type='module';label='7.00-8.52'}
+      else if(fwnum<=960){src='900/alert.js';type='module';label='9.00-9.60'}
+      else if(fwnum<=1102){src='css/main.js';type='';label='10.00-11.02';cb=function(){setTimeout(function(){doJb()},500)}}
+      else if(fwnum<=1202){src='slopkit/chain_lapse.js';type='module';label='11.50-12.02'}
+      else if(fwnum>=1250){src='slopkit/chain_poops.js';type='module';label='12.50-13.00'}
       else{
-        document.getElementById('state').textContent='firmware '+key+' not supported';
-        document.getElementById('state').className='bad';
+        document.getElementById('msgs2').textContent='الفيرموير '+key+' غير مدعوم';
+        document.getElementById('msgs2').className='bad';
+        logMsg('[error] firmware not supported','bad');
+        return;
+      }
+      logMsg('[route] chain: '+label+' → '+src,'ok');
+
+      function doLoad(attempt){
+        attempt=attempt||1;
+        document.getElementById('msgs2').textContent='جاري تحميل '+label+'...';
+        document.getElementById('msgs2').className='warn';
+        logMsg('[exploit] loading attempt '+attempt,'warn');
+        var s=document.createElement('script');
+        s.src=src;if(type) s.type=type;
+        s.onload=function(){logMsg('[exploit] script loaded','ok')};
+        s.onerror=function(){
+          s.remove();
+          if(attempt<3){
+            logMsg('[error] load failed, retry '+attempt+'/3','bad');
+            setTimeout(function(){doLoad(attempt+1)},attempt*900);
+          }else{
+            document.getElementById('msgs2').textContent='فشل التحميل — أعد المحاولة';
+            document.getElementById('msgs2').className='bad';
+            logMsg('[error] exploit failed','bad');
+          }
+        };
+        document.head.appendChild(s);
+      }
+
+      if(!autoRun.checked){
+        document.getElementById('msgs2').textContent='جاهز — اضغط للتشغيل';
+        document.getElementById('msgs2').className='ok';
+        logMsg('[wait] auto-run disabled, waiting for tap','info');
+        function fire(){
+          window.removeEventListener('click',fire);
+          window.removeEventListener('keydown',fire);
+          doLoad(1);
+        }
+        window.addEventListener('click',fire);
+        window.addEventListener('keydown',fire);
         return;
       }
 
-      var s=document.createElement('script');
-      s.src=src;if(type) s.type=type;
-      s.onerror=function(){
-        document.getElementById('state').textContent='exploit not found';
-        document.getElementById('state').className='bad';
-      };
-      if(cb) s.onload=cb;
-      document.head.appendChild(s);
+      doLoad(1);
     })();
   </script>
 </body>
