@@ -1,19 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-html{overflow:hidden}
-html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:18px/1.6 'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif}
-body{background:url('background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
-#brand{text-align:center;padding:18px;background:rgba(8,11,26,.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.15)}
-#brand h1{font-size:28px;font-weight:700;letter-spacing:.15em;color:#e2e8f0;margin:0}
-#brand h1 span{color:#00d4ff}
-#brand small{display:block;font-size:14px;color:#6b7280;margin-top:4px;letter-spacing:.05em}
-#wrap{padding:20px 16px;max-width:520px;margin:0 auto}
-#msgs{font-size:26px;font-weight:700;margin:0 0 10px}
-#det{font-size:16px;color:#9ca3af;margin:0 0 8px}
-#det b{color:#e2e8f0;font-weight:600}
-#cache{font-size:14px;color:#6b7280;margin:0 0 12px;min-height:16px}
-#cache.cacheok{color:#34d399}
-.ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
-.progress{width:80%;max-width:300px;height:5px;background:rgba(0,212,255,.1);border-radius:4px;margin:16px auto;overflow:hidden}
-.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#00d4ff,#a855f7);border-radius:4px;transition:width .3s}
-.check{display:none;font-size:32px;color:#34d399;margin:12px 0}
+html {
+    background-image: url('../background.png');
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #080b1a;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+h1 {
+    text-shadow: 0.1em 0.1em 0.2em black;
+    font-size: 25px;
+    color: white;
+}
