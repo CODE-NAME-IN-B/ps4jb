@@ -25,7 +25,7 @@
   #cache.cacheok{color:#34d399}
   .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
 
-  #logbox{margin-top:16px;padding:14px;border:1px solid rgba(0,212,255,.15);border-radius:8px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);max-height:180px;overflow-y:auto;font-size:13px;font-family:'Chakra Petch',monospace;color:#9ca3af;line-height:1.7}
+  #logbox{margin-top:16px;padding:14px;border:1px solid rgba(0,212,255,.15);border-radius:8px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);max-height:200px;overflow-y:auto;font-size:18px;font-family:'Chakra Petch',monospace;color:#9ca3af;line-height:1.7}
   #logbox .ok{color:#34d399}
   #logbox .bad{color:#f87171}
   #logbox .warn{color:#fbbf24}
@@ -76,8 +76,12 @@
 
 <div id="footer">
   <a href="https://github.com/CODE-NAME-IN-B">CODE-NAME-IN-B</a>
-  <span class="sep">|</span>
+  <br>
   شراكة: <b>الشاردة للإلكترونيات</b>
+  <br>
+  شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا
+  <br>
+  هاتف: 0920595447
 </div>
 
 <script>
@@ -200,15 +204,15 @@
       setState('جاهز — اضغط للتشغيل','ok');
       logMsg('[wait] auto-run disabled, waiting for tap','info');
       function fire(){
-        window.removeEventListener('click',fire);
-        window.removeEventListener('keydown',fire);
+        document.removeEventListener('click',fire);
+        document.removeEventListener('keydown',fire);
         running=true;
         setState('loading '+rt.label+'...','warn');
         logMsg('[exploit] starting chain: '+rt.label,'warn');
         doLoad(rt,1);
       }
-      window.addEventListener('click',fire);
-      window.addEventListener('keydown',fire);
+      document.addEventListener('click',fire);
+      document.addEventListener('keydown',fire);
       return;
     }
 
@@ -246,12 +250,12 @@
     setState(msg,'warn');
     logMsg('[tap] '+msg,'warn');
     function fire(){
-      window.removeEventListener('click',fire);
-      window.removeEventListener('keydown',fire);
+      document.removeEventListener('click',fire);
+      document.removeEventListener('keydown',fire);
       action();
     }
-    window.addEventListener('click',fire);
-    window.addEventListener('keydown',fire);
+    document.addEventListener('click',fire);
+    document.addEventListener('keydown',fire);
   }
 
   function go(){loadScript(route)}
@@ -290,7 +294,8 @@
     ac.addEventListener('cached',function(){
       setCache('cached',true);
       logMsg('[cache] cached successfully','ok');
-      waitForTap('CACHED — tap or press X to run',go);
+      setState('جاري التشغيل...','ok');
+      go();
     },false);
     ac.addEventListener('updateready',function(){
       try{ac.swapCache()}catch(e){}
