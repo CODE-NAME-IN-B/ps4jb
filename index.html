@@ -16,20 +16,13 @@
   #brand h1 span{color:#00d4ff}
   #brand small{display:block;font-size:14px;color:#6b7280;margin-top:4px;letter-spacing:.05em}
 
-  #wrap{padding:20px 16px;max-width:520px;margin:0 auto}
+  #wrap{padding:20px 16px;max-width:560px;margin:0 auto}
 
-  #msgs{font-size:26px;font-weight:700;margin:0 0 16px;text-align:center;line-height:1.4}
-  #det{font-size:16px;color:#9ca3af;margin:0 0 10px;text-align:center;line-height:1.6}
-  #det b{color:#e2e8f0;font-weight:600}
-  #cache{font-size:14px;color:#6b7280;margin:0 0 16px;text-align:center;min-height:16px}
-  #cache.cacheok{color:#34d399}
+  #msgs{font-size:30px;font-weight:700;margin:60px 0 400px;text-align:center;line-height:1.5;text-shadow:0.1em 0.1em 0.2em black}
   .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
 
   #logbox{margin-top:16px;padding:14px;border:1px solid rgba(0,212,255,.15);border-radius:8px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);max-height:200px;overflow-y:auto;font-size:18px;font-family:'Chakra Petch',monospace;color:#9ca3af;line-height:1.7}
-  #logbox .ok{color:#34d399}
-  #logbox .bad{color:#f87171}
-  #logbox .warn{color:#fbbf24}
-  #logbox .info{color:#60a5fa}
+  #logbox .ok{color:#34d399}#logbox .bad{color:#f87171}#logbox .warn{color:#fbbf24}#logbox .info{color:#60a5fa}
 
   .unsupported{
     margin-top:24px;padding:22px;border:1px solid rgba(0,212,255,.15);
@@ -54,18 +47,13 @@
 </head>
 <body>
 
-<h1 id="msgs" style="display:none"></h1>
-
 <div id="brand">
   <h1><span>al</span>nafar</h1>
   <small>PS4 Exploit Host</small>
 </div>
 
 <div id="wrap">
-  <div id="msgs2">جاري الفحص...</div>
-  <div id="det"></div>
-  <div id="cache"></div>
-  <div id="动态"></div>
+  <h1 id="msgs" style="font-size:30px;margin:60px 0 400px;text-align:center">جاري الفحص...</h1>
   <div id="logbox"></div>
 
   <div class="checkbox-wrap">
@@ -88,17 +76,13 @@
 (function(){
   'use strict';
 
-  // Global msgs element for exploit scripts (lapse.js etc.)
+  // msgs is the VISIBLE h1 element — exploit scripts write to it
   var msgsEl=document.getElementById('msgs');
-  // Also expose as global for scripts that reference it directly
   window.msgs=msgsEl;
-  window.msgs2=document.getElementById('msgs2');
 
   var logEl=document.getElementById('logbox');
-
   function logMsg(msg,type){
-    var c=type||'info';
-    logEl.innerHTML+='<span class="'+c+'">'+msg+'</span>\n';
+    logEl.innerHTML+='<span class="'+(type||'info')+'">'+msg+'</span>\n';
     logEl.scrollTop=logEl.scrollHeight;
   }
 
@@ -112,13 +96,7 @@
     {key_min:1250,key_max:1300,label:'12.50-13.00',script:'g2all/slopkit/chain_poops.js',module:true}
   ];
 
-  var stateEl=document.getElementById('msgs2');
-  var detEl=document.getElementById('det');
-  var cacheEl=document.getElementById('cache');
-  var infoEl=document.getElementById('动态');
-
-  function setState(t,c){stateEl.textContent=t;stateEl.className=c||'';msgsEl.textContent=t;msgsEl.className=c||''}
-  function setCache(t,ok){cacheEl.textContent=t;cacheEl.className=ok?'cacheok':''}
+  function setState(t,c){msgsEl.textContent=t;msgsEl.className=c||''}
 
   var params=new URLSearchParams(location.search);
 
@@ -145,40 +123,18 @@
   var forced=params.get('bug');
   if(forced==='lapse'||forced==='poops'){
     route={script:forced==='lapse'?'g2all/slopkit/chain_lapse.js':'g2all/slopkit/chain_poops.js',module:true,label:forced};
-    detEl.innerHTML='firmware <b>'+key+'</b> &middot; chain <b>'+forced+'</b> &middot; forced';
     logMsg('[route] forced chain: '+forced,'warn');
   }else if(!key){
-    setState('','');
-    detEl.innerHTML='';
-    logMsg('[error] not a PS4 — showing info page','warn');
-    infoEl.innerHTML='<div class="unsupported">'+
-      '<h2>هذه الصفحة مخصصة لجهاز PlayStation 4</h2>'+
-      '<p>افتح هذا الرابط من متصفح PS4 على جهازك.</p>'+
-      '<div class="fw-list">'+
-        '<b>الفيرموير المدعوم:</b><br>'+
-        '7.00 - 8.52 &middot; 9.00 - 9.60 &middot; 10.00 - 11.02<br>'+
-        '11.50 - 12.02 &middot; 12.50 - 13.00'+
-      '</div>'+
-    '</div>';
+    msgsEl.innerHTML='<span class="bad">هذه الصفحة مخصصة لجهاز PlayStation 4</span>';
+    logMsg('[error] not a PS4','warn');
     return;
   }else{
     route=findRoute(fwnum);
     if(route){
-      detEl.innerHTML='firmware <b>'+key+'</b> &middot; chain <b>'+route.label+'</b>';
       logMsg('[route] found: '+route.label+' → '+route.script,'ok');
     }else{
-      setState('','');
-      detEl.innerHTML='';
-      logMsg('[error] firmware '+key+' not supported','bad');
-      infoEl.innerHTML='<div class="unsupported">'+
-        '<h2>الفيرموير '+key+' غير مدعوم بعد</h2>'+
-        '<p>لا يوجد exploit متاح لهذه الإصدارة.</p>'+
-        '<div class="fw-list">'+
-          '<b>الفيرموير المدعوم:</b><br>'+
-          '7.00 - 8.52 &middot; 9.00 - 9.60 &middot; 10.00 - 11.02<br>'+
-          '11.50 - 12.02 &middot; 12.50 - 13.00'+
-        '</div>'+
-      '</div>';
+      msgsEl.innerHTML='<span class="bad">الفيرموير '+key+' غير مدعوم بعد</span>';
+      logMsg('[error] firmware not supported','bad');
       return;
     }
   }
@@ -207,7 +163,7 @@
         document.removeEventListener('click',fire);
         document.removeEventListener('keydown',fire);
         running=true;
-        setState('loading '+rt.label+'...','warn');
+        setState('جاري تحميل '+rt.label+'...','warn');
         logMsg('[exploit] starting chain: '+rt.label,'warn');
         doLoad(rt,1);
       }
@@ -217,7 +173,7 @@
     }
 
     running=true;
-    setState('loading '+rt.label+'...','warn');
+    setState('جاري تحميل '+rt.label+'...','warn');
     logMsg('[exploit] starting chain: '+rt.label,'warn');
     doLoad(rt,attempt);
   }
@@ -227,35 +183,20 @@
     s.async=false;s.src=rt.script;
     if(rt.module) s.type='module';
     s.onload=function(){
-      setState('chain ready','ok');
       logMsg('[exploit] script loaded: '+rt.script,'ok');
       if(rt.invoke&&typeof window[rt.invoke]==='function') window[rt.invoke]();
     };
     s.onerror=function(){
       s.remove();
       if(attempt<3){
-        setCache('retrying ('+attempt+'/3)...');
         logMsg('[error] load failed, retry '+attempt+'/3','bad');
         setTimeout(function(){doLoad(rt,attempt+1)},attempt*900);
       }else{
-        setState('failed','bad');
+        setState('فشل — أعد تشغيل الجهاز','bad');
         logMsg('[error] could not load '+rt.script,'bad');
-        setCache('could not load exploit. clear cache and reload.');
       }
     };
     document.head.appendChild(s);
-  }
-
-  function waitForTap(msg,action){
-    setState(msg,'warn');
-    logMsg('[tap] '+msg,'warn');
-    function fire(){
-      document.removeEventListener('click',fire);
-      document.removeEventListener('keydown',fire);
-      action();
-    }
-    document.addEventListener('click',fire);
-    document.addEventListener('keydown',fire);
   }
 
   function go(){loadScript(route)}
@@ -266,57 +207,49 @@
     logMsg('[cache] no manifest, running directly','info');
     go();
   }else if(!navigator.onLine){
-    setCache('offline mode',true);
     logMsg('[cache] offline, using cache','info');
     go();
   }else if(ac.status===ac.IDLE){
-    setCache('cached',true);
     logMsg('[cache] already cached','ok');
     go();
   }else if(ac.status===ac.UPDATEREADY){
     try{ac.swapCache()}catch(e){}
-    setCache('update ready',true);
     logMsg('[cache] update downloaded','ok');
-    waitForTap('UPDATE READY — tap or press X to reload',function(){location.reload()});
+    go();
   }else{
-    setCache('checking cache...');
     logMsg('[cache] checking...','info');
     ac.addEventListener('downloading',function(){
-      setCache('downloading for offline use...');
+      msgsEl.innerHTML='جاري تحميل الكاش...';
       logMsg('[cache] downloading...','info');
     },false);
     ac.addEventListener('progress',function(e){
       if(e&&e.total){
         var p=Math.round((e.loaded/e.total)*100);
-        setCache(p+'%');
+        msgsEl.innerHTML='جاري تحميل الكاش... '+p+'%';
       }
     },false);
     ac.addEventListener('cached',function(){
-      setCache('cached',true);
+      msgsEl.innerHTML='تم التخزين — جاري التشغيل...';
       logMsg('[cache] cached successfully','ok');
-      setState('جاري التشغيل...','ok');
       go();
     },false);
     ac.addEventListener('updateready',function(){
       try{ac.swapCache()}catch(e){}
-      setCache('update ready',true);
       logMsg('[cache] update ready','ok');
-      waitForTap('UPDATE READY — tap or press X to reload',function(){location.reload()});
+      go();
     },false);
     ac.addEventListener('noupdate',function(){
-      setCache('cached',true);
       logMsg('[cache] no update','ok');
       go();
     },false);
     ac.addEventListener('error',function(){
-      setCache('cache unavailable');
+      msgsEl.innerHTML='خطأ في الكاش';
       logMsg('[cache] error','bad');
-      waitForTap('tap to run anyway',go);
+      go();
     },false);
     ac.addEventListener('obsolete',function(){
-      setCache('cache obsolete');
       logMsg('[cache] obsolete','warn');
-      waitForTap('tap to run',go);
+      go();
     },false);
   }
 })();
