@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>alnafar | PS4 Exploit Host</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:15px/1.5 'Chakra Petch','Segoe UI',system-ui,sans-serif}
+  body{background:url('background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
+  #brand{text-align:center;padding:14px 16px;background:rgba(8,11,26,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.12)}
+  #brand h1{font-size:18px;font-weight:700;letter-spacing:.18em;color:#e2e8f0;margin:0;text-shadow:0 0 20px rgba(0,212,255,.3)}
+  #brand h1 span{color:#00d4ff}
+  #brand small{display:block;font-size:10px;color:#6b7280;margin-top:2px;letter-spacing:.1em}
+  #wrap{padding:20px 18px;max-width:520px;margin:0 auto}
+  #state{font-size:20px;font-weight:700;margin:0 0 10px;transition:color .3s}
+  #det{font-size:13px;color:#9ca3af;margin:0 0 8px;line-height:1.6}
+  #det b{color:#e2e8f0;font-weight:600}
+  #cache{font-size:12px;color:#6b7280;margin:0 0 16px;min-height:14px}
+  #cache.cacheok{color:#34d399}
+  .ok{color:#34d399}
+  .bad{color:#f87171}
+  .warn{color:#fbbf24}
+  .unsupported{
+    margin-top:20px;padding:20px;border:1px solid rgba(0,212,255,.15);
+    border-radius:10px;background:rgba(8,11,26,.7);backdrop-filter:blur(6px);text-align:center;
+  }
+  .unsupported h2{font-size:15px;color:#e2e8f0;margin:0 0 8px;font-weight:600}
+  .unsupported p{font-size:12px;color:#9ca3af;line-height:1.7;margin:0}
+  .unsupported .fw-list{margin-top:12px;text-align:left;font-size:11px;color:#6b7280;line-height:1.8}
+  .unsupported .fw-list b{color:#9ca3af}
+  #footer{text-align:center;padding:16px;font-size:11px;color:#374151;line-height:1.8}
+  #footer a{color:#00d4ff;text-decoration:none;font-weight:600}
+  #footer a:hover{text-decoration:underline}
+  #footer .sep{color:#1f2937;margin:0 4px}
+</style>
+</head>
+<body>
+
+<div id="brand">
+  <h1><span>al</span>nafar</h1>
+  <small>PS4 Exploit Host</small>
+</div>
+
+<div id="wrap">
+  <div id="state">scanning device...</div>
+  <div id="det"></div>
+  <div id="cache"></div>
+  <div id="动态"></div>
+</div>
+
+<div id="footer">
+  <a href="https://github.com/CODE-NAME-IN-B">CODE-NAME-IN-B</a>
+  <span class="sep">|</span>
+  Partnership: <b>Al-Sharada Electronics</b>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var ROUTES=[
+    {key_min:700,key_max:852,label:'7.00-8.52',script:'g2all/700/alert.js',module:true},
+    {key_min:900,key_max:960,label:'9.00-9.60',script:'g2all/900/alert.js',module:true},
+    {key_min:1000,key_max:1102,label:'10.00-11.02',script:'g2all/css/main.js',module:false,invoke:'doJb'},
+    {key_min:1150,key_max:1202,label:'11.50-12.02',script:'g2all/slopkit/chain_lapse.js',module:true},
+    {key_min:1250,key_max:1300,label:'12.50-13.00',script:'g2all/slopkit/chain_poops.js',module:true}
+  ];
+
+  var stateEl=document.getElementById('state');
+  var detEl=document.getElementById('det');
+  var cacheEl=document.getElementById('cache');
+  var infoEl=document.getElementById('动态');
+
+  function setState(t,c){stateEl.textContent=t;stateEl.className=c||''}
+  function setCache(t,ok){cacheEl.textContent=t;cacheEl.className=ok?'cacheok':''}
+
+  var params=new URLSearchParams(location.search);
+
+  var key=null,fwnum=null,route=null;
+  var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+
+  if(m){
+    var major=parseInt(m[1],10);
+    var minor=parseInt(m[2],16);
+    var ms=minor.toString(16);
+    if(ms.length<2) ms='0'+ms;
+    key=m[1]+'.'+ms;
+    fwnum=major*100+parseInt(ms,10);
+  }
+
+  function findRoute(fw){
+    for(var i=0;i<ROUTES.length;i++){
+      if(fw>=ROUTES[i].key_min&&fw<=ROUTES[i].key_max) return ROUTES[i];
+    }
+    return null;
+  }
+
+  var forced=params.get('bug');
+  if(forced==='lapse'||forced==='poops'){
+    route={script:forced==='lapse'?'g2all/slopkit/chain_lapse.js':'g2all/slopkit/chain_poops.js',module:true,label:forced};
+    detEl.innerHTML='firmware <b>'+key+'</b> &middot; chain <b>'+forced+'</b> &middot; forced';
+  }else if(!key){
+    setState('','');
+    detEl.innerHTML='';
+    infoEl.innerHTML='<div class="unsupported">'+
+      '<h2>this page is built for playstation 4</h2>'+
+      '<p>open this address from your PS4 browser to jailbreak your console.</p>'+
+      '<div class="fw-list">'+
+        '<b>supported firmwares:</b><br>'+
+        '7.00 - 8.52 &middot; 9.00 - 9.60 &middot; 10.00 - 11.02<br>'+
+        '11.50 - 12.02 &middot; 12.50 - 13.00'+
+      '</div>'+
+    '</div>';
+    return;
+  }else{
+    route=findRoute(fwnum);
+    if(route){
+      detEl.innerHTML='firmware <b>'+key+'</b> &middot; chain <b>'+route.label+'</b>';
+    }else{
+      setState('','');
+      detEl.innerHTML='';
+      infoEl.innerHTML='<div class="unsupported">'+
+        '<h2>firmware '+key+' is not supported yet</h2>'+
+        '<p>no working exploit chain for this version.</p>'+
+        '<div class="fw-list">'+
+          '<b>supported firmwares:</b><br>'+
+          '7.00 - 8.52 &middot; 9.00 - 9.60 &middot; 10.00 - 11.02<br>'+
+          '11.50 - 12.02 &middot; 12.50 - 13.00'+
+        '</div>'+
+      '</div>';
+      return;
+    }
+  }
+
+  var running=false;
+  function loadScript(rt,attempt){
+    attempt=attempt||1;
+    if(running) return;
+    running=true;
+    setState('loading '+rt.label+'...','warn');
+
+    var s=document.createElement('script');
+    s.async=false;s.src=rt.script;
+    if(rt.module) s.type='module';
+    s.onload=function(){
+      setState('chain ready','ok');
+      if(rt.invoke&&typeof window[rt.invoke]==='function') window[rt.invoke]();
+    };
+    s.onerror=function(){
+      s.remove();
+      if(attempt<3){
+        setCache('retrying ('+attempt+'/3)...');
+        setTimeout(function(){loadScript(rt,attempt+1)},attempt*900);
+      }else{
+        setState('failed','bad');
+        setCache('could not load exploit. clear cache and reload.');
+      }
+    };
+    document.head.appendChild(s);
+  }
+
+  function waitForTap(msg,action){
+    setState(msg,'warn');
+    function fire(){
+      window.removeEventListener('click',fire);
+      window.removeEventListener('keydown',fire);
+      action();
+    }
+    window.addEventListener('click',fire);
+    window.addEventListener('keydown',fire);
+  }
+
+  function go(){loadScript(route)}
+
+  var ac=window.applicationCache;
+  if(!ac||!document.documentElement.hasAttribute('manifest')){
+    go();
+  }else if(!navigator.onLine){
+    setCache('offline mode',true);
+    go();
+  }else if(ac.status===ac.IDLE){
+    setCache('cached',true);
+    go();
+  }else if(ac.status===ac.UPDATEREADY){
+    try{ac.swapCache()}catch(e){}
+    setCache('update ready',true);
+    waitForTap('tap or press X to reload',function(){location.reload()});
+  }else{
+    setCache('checking cache...');
+    ac.addEventListener('downloading',function(){setCache('downloading for offline use...')},false);
+    ac.addEventListener('progress',function(e){
+      if(e&&e.total) setCache(Math.round((e.loaded/e.total)*100)+'%');
+    },false);
+    ac.addEventListener('cached',function(){
+      setCache('cached',true);
+      waitForTap('tap or press X to run',go);
+    },false);
+    ac.addEventListener('updateready',function(){
+      try{ac.swapCache()}catch(e){}
+      setCache('update ready',true);
+      waitForTap('tap or press X to reload',function(){location.reload()});
+    },false);
+    ac.addEventListener('noupdate',function(){
+      setCache('cached',true);
+      go();
+    },false);
+    ac.addEventListener('error',function(){
+      setCache('cache unavailable');
+      waitForTap('tap to run anyway',go);
+    },false);
+    ac.addEventListener('obsolete',function(){
+      setCache('cache obsolete');
+      waitForTap('tap to run',go);
+    },false);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>alnafar | Cache 10.00-11.02</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:15px/1.5 'Chakra Petch','Segoe UI',system-ui,sans-serif}
+    body{background:url('../background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
+    #brand{text-align:center;padding:14px 16px;background:rgba(8,11,26,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.12)}
+    #brand h1{font-size:18px;font-weight:700;letter-spacing:.18em;color:#e2e8f0;margin:0}
+    #brand h1 span{color:#00d4ff}
+    #wrap{padding:20px 18px;max-width:520px;margin:0 auto;text-align:center}
+    #state{font-size:18px;font-weight:700;margin:0 0 8px}
+    #det{font-size:13px;color:#9ca3af;margin:0 0 8px}
+    #det b{color:#e2e8f0;font-weight:600}
+    #cache{font-size:12px;color:#6b7280;margin:0 0 12px;min-height:14px}
+    #cache.cacheok{color:#34d399}
+    .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
+    .progress{width:80%;max-width:300px;height:4px;background:rgba(0,212,255,.1);border-radius:4px;margin:16px auto;overflow:hidden}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#00d4ff,#a855f7);border-radius:4px;transition:width .3s}
+    .check{display:none;font-size:28px;color:#34d399;margin:12px 0}
+  </style>
+</head>
+<body>
+  <div id="brand"><h1><span>al</span>nafar</h1></div>
+  <div id="wrap">
+    <div id="state">checking cache...</div>
+    <div id="det">firmware <b>10.00-11.02</b></div>
+    <div id="cache"></div>
+    <div class="progress"><div class="progress-fill" id="progress"></div></div>
+    <div class="check" id="check">&#10003;</div>
+  </div>
+  <script>
+    (function(){
+      var progress=document.getElementById('progress');
+      var check=document.getElementById('check');
+      var state=document.getElementById('state');
+      var cache=document.getElementById('cache');
+      var ac=window.applicationCache;
+      function setProgress(p){progress.style.width=p+'%'}
+      function done(msg){state.textContent=msg;state.className='ok';cache.textContent='';progress.style.display='none';check.style.display='block'}
+      if(!ac){done('cache not supported');return}
+      ac.addEventListener('downloading',function(){cache.textContent='downloading...'},false);
+      ac.addEventListener('progress',function(e){if(e.total)setProgress(Math.round(e.loaded/e.total*100))},false);
+      ac.addEventListener('cached',function(){done('cached successfully')},false);
+      ac.addEventListener('noupdate',function(){done('cached')},false);
+      ac.addEventListener('error',function(){done('cache unavailable');progress.style.display='none'},false);
+      ac.addEventListener('obsolete',function(){done('cache obsolete');progress.style.display='none'},false);
+      if(ac.status===ac.IDLE){done('cached')}
+      else if(ac.status===ac.UPDATEREADY){try{ac.swapCache()}done('updated')}
+      else{ac.update()}
+    })();
+  </script>
+</body>
+</html>

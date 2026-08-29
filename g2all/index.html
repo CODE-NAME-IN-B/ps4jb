@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>alnafar | GoldHEN</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:15px/1.5 'Chakra Petch','Segoe UI',system-ui,sans-serif}
+    body{background:url('../background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
+    #brand{text-align:center;padding:14px 16px;background:rgba(8,11,26,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.12)}
+    #brand h1{font-size:18px;font-weight:700;letter-spacing:.18em;color:#e2e8f0;margin:0}
+    #brand h1 span{color:#00d4ff}
+    #wrap{padding:20px 18px;max-width:520px;margin:0 auto}
+    #state{font-size:18px;font-weight:700;margin:0 0 8px}
+    #det{font-size:13px;color:#9ca3af;margin:0 0 8px}
+    #det b{color:#e2e8f0;font-weight:600}
+    #cache{font-size:12px;color:#6b7280;margin:0 0 12px;min-height:14px}
+    #cache.cacheok{color:#34d399}
+    .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
+  </style>
+</head>
+<body>
+  <div id="brand"><h1><span>al</span>nafar</h1></div>
+  <div id="wrap">
+    <div id="state">loading exploit...</div>
+    <div id="det"></div>
+    <div id="cache"></div>
+  </div>
+  <script>
+    (function(){
+      'use strict';
+      var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+      if(!m){
+        document.getElementById('state').textContent='playstation 4 required';
+        document.getElementById('state').className='bad';
+        document.getElementById('det').innerHTML='open this page from your PS4 browser';
+        return;
+      }
+      var major=parseInt(m[1],10);
+      var minor=parseInt(m[2],16);
+      var ms=minor.toString(16);
+      if(ms.length<2) ms='0'+ms;
+      var key=m[1]+'.'+ms;
+      var fwnum=major*100+parseInt(ms,10);
+      document.getElementById('det').innerHTML='firmware <b>'+key+'</b>';
+
+      var src,type,cb;
+      if(fwnum<=852){src='700/alert.js';type='module'}
+      else if(fwnum<=960){src='900/alert.js';type='module'}
+      else if(fwnum<=1102){src='css/main.js';type='';cb=function(){setTimeout(function(){doJb()},500)}}
+      else if(fwnum<=1202){src='slopkit/chain_lapse.js';type='module'}
+      else if(fwnum>=1250){src='slopkit/chain_poops.js';type='module'}
+      else{
+        document.getElementById('state').textContent='firmware '+key+' not supported';
+        document.getElementById('state').className='bad';
+        return;
+      }
+
+      var s=document.createElement('script');
+      s.src=src;if(type) s.type=type;
+      s.onerror=function(){
+        document.getElementById('state').textContent='exploit not found';
+        document.getElementById('state').className='bad';
+      };
+      if(cb) s.onload=cb;
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
