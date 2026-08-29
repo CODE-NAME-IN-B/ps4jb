@@ -7,40 +7,107 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  html{overflow:hidden}
-  html,body{min-height:100vh;background:#080b1a;color:#e2e8f0;font:18px/1.6 'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif}
-  body{background:url('background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
+  html,body{
+    height:100%;width:100%;overflow:hidden;
+    background:#080b1a;color:#e2e8f0;
+    font-family:'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif;
+  }
+  body{
+    background:url('background.png') no-repeat center center;
+    background-size:cover;background-attachment:fixed;
+    display:flex;flex-direction:column;
+  }
 
-  #brand{text-align:center;padding:18px;background:rgba(8,11,26,.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,212,255,.15)}
-  #brand h1{font-size:28px;font-weight:700;letter-spacing:.15em;color:#e2e8f0;margin:0;text-shadow:0 0 25px rgba(0,212,255,.4)}
+  /* Header */
+  #brand{
+    flex:0 0 auto;
+    text-align:center;padding:2.5vh 16px;
+    background:rgba(8,11,26,.9);backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(0,212,255,.15);
+  }
+  #brand h1{
+    font-size:clamp(24px,4.5vw,50px);font-weight:700;
+    letter-spacing:.15em;color:#e2e8f0;margin:0;
+    text-shadow:0 0 25px rgba(0,212,255,.4);
+  }
   #brand h1 span{color:#00d4ff}
-  #brand small{display:block;font-size:14px;color:#6b7280;margin-top:4px;letter-spacing:.05em}
+  #brand small{
+    display:block;font-size:clamp(12px,2vw,20px);
+    color:#6b7280;margin-top:4px;letter-spacing:.05em;
+  }
 
-  #wrap{padding:20px 16px;max-width:560px;margin:0 auto}
+  /* Main content — centered vertically */
+  #main{
+    flex:1 1 auto;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:2vh 20px;
+    max-width:900px;width:100%;margin:0 auto;
+  }
 
-  #msgs{font-size:30px;font-weight:700;margin:60px 0 400px;text-align:center;line-height:1.5;text-shadow:0.1em 0.1em 0.2em black}
+  #msgs{
+    font-size:clamp(28px,5vw,50px);font-weight:700;
+    text-align:center;line-height:1.5;
+    text-shadow:0.1em 0.1em 0.2em black;
+    margin:0 0 3vh;
+  }
   .ok{color:#34d399}.bad{color:#f87171}.warn{color:#fbbf24}
 
-  #logbox{margin-top:16px;padding:14px;border:1px solid rgba(0,212,255,.15);border-radius:8px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);max-height:200px;overflow-y:auto;font-size:18px;font-family:'Chakra Petch',monospace;color:#9ca3af;line-height:1.7}
+  /* Log box */
+  #logbox{
+    width:100%;max-width:700px;
+    padding:16px 20px;
+    border:1px solid rgba(0,212,255,.15);border-radius:10px;
+    background:rgba(8,11,26,.75);backdrop-filter:blur(6px);
+    max-height:20vh;overflow-y:auto;
+    font-size:clamp(14px,2.2vw,22px);
+    font-family:'Chakra Petch',monospace;
+    color:#9ca3af;line-height:1.7;
+    margin-bottom:2vh;
+  }
   #logbox .ok{color:#34d399}#logbox .bad{color:#f87171}#logbox .warn{color:#fbbf24}#logbox .info{color:#60a5fa}
 
+  /* Unsupported box */
   .unsupported{
-    margin-top:24px;padding:22px;border:1px solid rgba(0,212,255,.15);
-    border-radius:10px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);text-align:center;
+    width:100%;max-width:700px;
+    padding:24px;border:1px solid rgba(0,212,255,.15);
+    border-radius:12px;background:rgba(8,11,26,.75);backdrop-filter:blur(6px);
+    text-align:center;
   }
-  .unsupported h2{font-size:20px;color:#e2e8f0;margin:0 0 10px;font-weight:600}
-  .unsupported p{font-size:16px;color:#9ca3af;line-height:1.7;margin:0}
-  .unsupported .fw-list{margin-top:14px;text-align:left;font-size:14px;color:#6b7280;line-height:1.9}
+  .unsupported h2{font-size:clamp(18px,3vw,30px);color:#e2e8f0;margin:0 0 10px;font-weight:600}
+  .unsupported p{font-size:clamp(14px,2.2vw,22px);color:#9ca3af;line-height:1.7;margin:0}
+  .unsupported .fw-list{margin-top:14px;text-align:left;font-size:clamp(12px,2vw,18px);color:#6b7280;line-height:1.9}
   .unsupported .fw-list b{color:#9ca3af}
 
-  .checkbox-wrap{margin-top:18px;text-align:center}
-  .checkbox-wrap label{font-size:16px;color:#9ca3af;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-  .checkbox-wrap input[type="checkbox"]{width:18px;height:18px;accent-color:#00d4ff;cursor:pointer}
+  /* Checkbox */
+  .checkbox-wrap{margin-top:2vh;text-align:center}
+  .checkbox-wrap label{
+    font-size:clamp(14px,2.2vw,22px);color:#9ca3af;cursor:pointer;
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  .checkbox-wrap input[type="checkbox"]{
+    width:clamp(18px,2.5vw,28px);height:clamp(18px,2.5vw,28px);
+    accent-color:#00d4ff;cursor:pointer;
+  }
 
-  #footer{text-align:center;padding:24px 16px;font-size:15px;color:#9ca3af;line-height:1.9;background:rgba(8,11,26,.6);backdrop-filter:blur(6px);margin-top:12px}
-  #footer .store-name{font-size:24px;font-weight:700;color:#00d4ff;letter-spacing:.05em;margin-bottom:6px;text-shadow:0 0 15px rgba(0,212,255,.3)}
-  #footer .store-addr{font-size:16px;color:#e2e8f0;line-height:1.8}
-  #footer .store-phone{font-size:22px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-top:8px;text-shadow:0 0 12px rgba(52,211,153,.3)}
+  /* Footer */
+  #footer{
+    flex:0 0 auto;text-align:center;
+    padding:2vh 16px;
+    font-size:clamp(13px,2vw,18px);color:#9ca3af;line-height:1.9;
+    background:rgba(8,11,26,.6);backdrop-filter:blur(6px);
+  }
+  #footer .store-name{
+    font-size:clamp(20px,3.5vw,36px);font-weight:700;color:#00d4ff;
+    letter-spacing:.05em;margin-bottom:6px;
+    text-shadow:0 0 15px rgba(0,212,255,.3);
+  }
+  #footer .store-addr{font-size:clamp(14px,2.2vw,22px);color:#e2e8f0;line-height:1.8}
+  #footer .store-phone{
+    font-size:clamp(18px,3vw,32px);font-weight:700;color:#34d399;
+    letter-spacing:.08em;margin-top:8px;
+    text-shadow:0 0 12px rgba(52,211,153,.3);
+  }
   #footer a{color:#a78bfa;text-decoration:none;font-weight:600}
   #footer a:hover{text-decoration:underline}
 </style>
@@ -52,9 +119,10 @@
   <small>PS4 Exploit Host</small>
 </div>
 
-<div id="wrap">
-  <h1 id="msgs" style="font-size:30px;margin:60px 0 400px;text-align:center">جاري الفحص...</h1>
+<div id="main">
+  <h1 id="msgs">جاري الفحص...</h1>
   <div id="logbox"></div>
+  <div id="动态"></div>
 
   <div class="checkbox-wrap">
     <label>
@@ -76,11 +144,11 @@
 (function(){
   'use strict';
 
-  // msgs is the VISIBLE h1 element — exploit scripts write to it
   var msgsEl=document.getElementById('msgs');
   window.msgs=msgsEl;
 
   var logEl=document.getElementById('logbox');
+  var infoEl=document.getElementById('动态');
   function logMsg(msg,type){
     logEl.innerHTML+='<span class="'+(type||'info')+'">'+msg+'</span>\n';
     logEl.scrollTop=logEl.scrollHeight;
@@ -139,7 +207,6 @@
     }
   }
 
-  // Auto-run checkbox
   var autoRun=document.getElementById('autoRun');
   var autoRunKey='alnafar_autorun';
   var saved=localStorage.getItem(autoRunKey);
@@ -150,7 +217,6 @@
   });
   logMsg('[settings] auto-run: '+(autoRun.checked?'enabled':'disabled'),'info');
 
-  // Exploit chain
   var running=false;
   function loadScript(rt,attempt){
     attempt=attempt||1;
@@ -201,7 +267,6 @@
 
   function go(){loadScript(route)}
 
-  // Cache
   var ac=window.applicationCache;
   if(!ac||!document.documentElement.hasAttribute('manifest')){
     logMsg('[cache] no manifest, running directly','info');
