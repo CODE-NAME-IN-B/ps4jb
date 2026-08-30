@@ -1830,7 +1830,7 @@ function runPayload(PLfile) {
 
 kexploit().then(() => {
 	setTimeout(() => {
-		runPayload("./goldhen_2.4b18.10.bin");
+		runPayload("./g2all/goldhen_2.4b18.10.bin");
 		document.getElementById("msgs").innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
 	},500);
 }).catch(() => {
