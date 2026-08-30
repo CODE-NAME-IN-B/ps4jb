@@ -347,9 +347,9 @@ function free_aios(ids_p, num_ids) {
     }
     if (rem) {
         const addr = ids_p.add((num_batches << 2) * len);
-        aio_multi_cancel(addr, len);
-        aio_multi_poll(addr, len);
-        aio_multi_delete(addr, len);
+        aio_multi_cancel(addr, rem);
+        aio_multi_poll(addr, rem);
+        aio_multi_delete(addr, rem);
     }
 }
 
@@ -364,8 +364,8 @@ function free_aios2(ids_p, num_ids) {
     }
     if (rem) {
         const addr = ids_p.add((num_batches << 2) * len);
-        aio_multi_poll(addr, len);
-        aio_multi_delete(addr, len);
+        aio_multi_poll(addr, rem);
+        aio_multi_delete(addr, rem);
     }
 }
 
@@ -1695,7 +1695,7 @@ export async function kexploit() {
     }
     
     if (localStorage.ExploitLoaded === "yes" && sessionStorage.ExploitLoaded != "yes") {
-        msgs.innerHTML = "GoldHEN is Already Loaded ...";
+        document.getElementById("msgs").innerHTML = "GoldHEN is Already Loaded ...";
         return new Promise(() => {});
     }
  
@@ -1831,9 +1831,9 @@ function runPayload(PLfile) {
 kexploit().then(() => {
 	setTimeout(() => {
 		runPayload("./goldhen_2.4b18.10.bin");
-		msgs.innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
+		document.getElementById("msgs").innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
 	},500);
 }).catch(() => {
-    msgs.innerHTML = "Failed to Load! Restart Your Console ...";
-	msgs.style.color = "yellow";
+    document.getElementById("msgs").innerHTML = "Failed to Load! Restart Your Console ...";
+	document.getElementById("msgs").style.color = "yellow";
 });

@@ -130,7 +130,7 @@ class KernelView {
   }
 
   set pipe_count(count) {
-    if (count < 0 && count > 0xffffffff) {
+    if (count < 0 || count > 0xffffffff) {
       throw new RangeError(`count ${count} out of range !!`);
     }
 
@@ -249,6 +249,8 @@ class KernelView {
   }
 
   setFloat64(byteOffset, value, littleEndian = false) {
+    this.view.setBInt(0, 0, true);
+    this.view.setFloat64(0, value, littleEndian);
     this.kwrite(this.pipe_backing.add(byteOffset), this.dv_backing, 8);
   }
 
@@ -436,7 +438,7 @@ function fget(fd) {
 }
 
 function fput(fd, fp) {
-  return kview(fdt_ofiles).getBInt(fd * FILEDESCENT_SIZE, fp, true);
+  return kview(fdt_ofiles).setBInt(fd * FILEDESCENT_SIZE, fp, true);
 }
 
 function fhold(fp) {
@@ -452,7 +454,7 @@ function get_in6p_outputopts(fd) {
 }
 
 function get_pktinfo_from_so(fd) {
-  return kview(get_in6p_outputopts(fd)).gerBInt(0x10, true); // ip6po_pktinfo
+  return kview(get_in6p_outputopts(fd)).getBInt(0x10, true); // ip6po_pktinfo
 }
 
 function get_rthdr_from_so(fd) {

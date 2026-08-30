@@ -1,18 +1,30 @@
 html {
-    background-image: url('../background.png');
+    background-image: url('background.png');
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    background-color: #080b1a;
-    color: white;
+    background-color: #0F0F23;
+    color: #e2e8f0;
     text-align: center;
     overflow: hidden;
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
 }
 
 h1 {
-    text-shadow: 0.1em 0.1em 0.2em black;
+    font-family: 'Russo One', 'Chakra Petch', sans-serif;
+    text-shadow: 0 0 10px #7C3AED, 0 0 20px rgba(124,58,237,.5);
     font-size: 25px;
-    color: white;
+    color: #e2e8f0;
+}
+
+a {
+    color: #A78BFA;
+    text-decoration: none;
+    transition: all .2s ease;
+}
+
+a:hover {
+    color: #F43F5E;
+    text-shadow: 0 0 8px rgba(244,63,94,.5);
 }

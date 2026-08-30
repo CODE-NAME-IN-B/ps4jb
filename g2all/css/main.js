@@ -53,7 +53,7 @@ async function doJb() {
     }
 
     if (fn.setuid.invoke(0) !== -1) {
-      msgs.innerHTML = "GoldHEN is Already Loaded ...";
+      document.getElementById("msgs").innerHTML = "GoldHEN is Already Loaded ...";
       return;
     }
 
@@ -111,10 +111,12 @@ async function doJb() {
       load_bin(bin_u8);
     }
 
-    msgs.innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
+    var msgsEl = document.getElementById("msgs");
+    msgsEl.innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
     logger.info("===END===");
   } catch (e) {
-    msgs.innerHTML = "Failed to Load! Restart Your Console ...";
-    msgs.style.color = "yellow";
+    var msgsEl = document.getElementById("msgs");
+    msgsEl.innerHTML = "Failed to Load! Restart Your Console ...";
+    msgsEl.style.color = "yellow";
   }
 }
