@@ -100,9 +100,8 @@
     margin-bottom:clamp(10px,1.5vh,16px);
     box-shadow:0 0 15px rgba(124,58,237,.1),inset 0 0 30px rgba(0,0,0,.3);
   }
-  #logbox::-webkit-scrollbar{width:8px}
-  #logbox::-webkit-scrollbar-track{background:rgba(15,15,35,.5);border-radius:4px}
-  #logbox::-webkit-scrollbar-thumb{background:rgba(124,58,237,.5);border-radius:4px}
+  #logbox{scrollbar-width:none;-ms-overflow-style:none}
+  #logbox::-webkit-scrollbar{display:none}
   #logbox .ok{color:#4ade80}#logbox .bad{color:#FB7185}#logbox .warn{color:#FCD34D}#logbox .info{color:#A5B4FC}
 
   /* Unsupported box */
