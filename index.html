@@ -240,9 +240,7 @@
   var ROUTES=[
     {key_min:700,key_max:852,label:'7.00-8.52',script:'g2all/700/alert.js',module:true},
     {key_min:900,key_max:960,label:'9.00-9.60',script:'g2all/900/alert.js',module:true},
-    {key_min:1000,key_max:1102,label:'10.00-11.02',script:'g2all/css/main.js',module:false,invoke:'doJb'},
-    {key_min:1150,key_max:1202,label:'11.50-12.02',script:'g2all/slopkit/chain_lapse.js',module:true},
-    {key_min:1250,key_max:1300,label:'12.50-13.00',script:'g2all/slopkit/chain_poops.js',module:true}
+    {key_min:1000,key_max:1300,label:'10.00-13.00',redirect:'g2all/index.html'}
   ];
 
   function setState(t,c){msgsEl.textContent=t;msgsEl.className=c||''}
@@ -280,12 +278,18 @@
   }else{
     route=findRoute(fwnum);
     if(route){
-      logMsg('[route] found: '+route.label+' → '+route.script,'ok');
+      logMsg('[route] found: '+route.label,'ok');
     }else{
       msgsEl.innerHTML='<span class="bad">الفيرموير '+key+' غير مدعوم بعد</span>';
       logMsg('[error] firmware not supported','bad');
       return;
     }
+  }
+
+  if(route.redirect){
+    logMsg('[route] redirecting to: '+route.redirect,'ok');
+    window.location.href=route.redirect;
+    return;
   }
 
   var autoRun=document.getElementById('autoRun');

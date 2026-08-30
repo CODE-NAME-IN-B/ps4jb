@@ -245,8 +245,8 @@ function makeRpc(worker) {
         const fwResolved = offsetsFor(navigator.userAgent);
         const fwKey = fwResolved.key;
         const kpatchName = fwResolved.off && fwResolved.off.kpatch
-            ? "g2all/slopkit/patches/" + fwResolved.off.kpatch
-            : fwKey ? "g2all/slopkit/patches/" + fwKey.replace(".", "") + ".bin" : null;
+            ? "slopkit/patches/" + fwResolved.off.kpatch
+            : fwKey ? "slopkit/patches/" + fwKey.replace(".", "") + ".bin" : null;
         let kpatch = null;
         try {
             if (kpatchName) {
@@ -277,7 +277,7 @@ function makeRpc(worker) {
 
         let payload = null;
         try {
-            const prsp = await fetch("g2all/goldhen_2.4b18.10.bin");
+            const prsp = await fetch("goldhen_2.4b18.10.bin");
             if (prsp.ok) payload = new Uint8Array(await prsp.arrayBuffer());
         } catch (e) {
             mark("PAYLOAD-FETCH-FAILED", (e && e.message) ? e.message : String(e));
