@@ -23,13 +23,13 @@
     pointer-events:none;z-index:9999;
   }
   #brand{
-    flex:0 0 auto;text-align:center;padding:2.5vh 16px;
+    flex:0 0 auto;text-align:center;padding:clamp(16px,3vh,32px) clamp(16px,2vw,32px);
     background:rgba(15,15,35,.92);backdrop-filter:blur(12px);
     border-bottom:1px solid rgba(124,58,237,.25);
   }
   #brand h1{
     font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(28px,5vw,56px);font-weight:700;
+    font-size:clamp(32px,5vw,72px);font-weight:700;
     letter-spacing:.2em;color:#e2e8f0;margin:0;
     text-shadow:0 0 10px #7C3AED,0 0 20px #7C3AED,0 0 40px rgba(124,58,237,.5);
   }
@@ -40,29 +40,30 @@
   #main{
     flex:1 1 auto;display:flex;flex-direction:column;
     align-items:center;justify-content:center;
-    padding:2vh 20px;max-width:900px;width:100%;margin:0 auto;
+    padding:clamp(16px,3vh,40px) clamp(20px,3vw,40px);max-width:1000px;width:100%;margin:0 auto;
   }
   #msgs{
     font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(24px,4vw,44px);font-weight:700;
+    font-size:clamp(28px,5vw,64px);font-weight:700;
     text-align:center;line-height:1.5;
     text-shadow:0 0 10px rgba(124,58,237,.6),0 0 20px rgba(124,58,237,.4);
-    margin:0 0 3vh;
+    margin:0 0 clamp(16px,3vh,32px);
   }
-  .ok{color:#34d399;text-shadow:0 0 10px rgba(52,211,153,.5)}
-  .bad{color:#F43F5E;text-shadow:0 0 10px rgba(244,63,94,.5)}
-  .warn{color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.5)}
+  .ok{color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.5)}
+  .bad{color:#FB7185;text-shadow:0 0 10px rgba(251,113,133,.5)}
+  .warn{color:#FCD34D;text-shadow:0 0 10px rgba(252,211,77,.5)}
   #footer{
-    flex:0 0 auto;text-align:center;padding:2vh 16px;
-    font-size:clamp(13px,2vw,18px);color:#9ca3af;line-height:1.9;
-    background:rgba(15,15,35,.7);backdrop-filter:blur(8px);
-    border-top:1px solid rgba(124,58,237,.15);
+    flex:0 0 auto;text-align:center;padding:clamp(12px,2vh,24px) clamp(16px,2vw,32px);
+    font-size:clamp(14px,2.2vw,24px);color:#f1f5f9;line-height:1.9;
+    background:rgba(15,15,35,.85);backdrop-filter:blur(8px);
+    border-top:1px solid rgba(124,58,237,.25);
   }
   #footer .store-name{
     font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(18px,3vw,28px);font-weight:700;
+    font-size:clamp(22px,3.5vw,42px);font-weight:700;
     background:linear-gradient(135deg,#7C3AED,#F43F5E);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 10px rgba(124,58,237,.5));
   }
 </style>
 </head>
