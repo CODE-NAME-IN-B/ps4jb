@@ -1,61 +1,35 @@
 <!DOCTYPE html>
-<html lang="ar" dir="ltr" manifest="900.manifest">
+<html manifest="900.manifest">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>alnafar | Cache 9.00-9.60</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Russo+One&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{overflow:hidden}
-    html,body{min-height:100vh;background:#0F0F23;color:#e2e8f0;font:18px/1.6 'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif}
-    body{background:url('../background.png') no-repeat center center;background-size:cover;background-attachment:fixed}
-    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);pointer-events:none;z-index:9999}
-    #brand{text-align:center;padding:18px;background:rgba(15,15,35,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(124,58,237,.25)}
-    #brand h1{font-family:'Russo One','Chakra Petch',sans-serif;font-size:28px;font-weight:700;letter-spacing:.2em;color:#e2e8f0;margin:0;text-shadow:0 0 10px #7C3AED,0 0 20px rgba(124,58,237,.5)}
-    #brand h1 span{background:linear-gradient(135deg,#7C3AED,#F43F5E);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    #wrap{padding:20px 16px;max-width:520px;margin:0 auto;text-align:center}
-    #msgs{font-family:'Russo One','Chakra Petch',sans-serif;font-size:26px;font-weight:700;margin:0 0 8px;text-shadow:0 0 10px rgba(124,58,237,.6)}
-    #det{font-size:16px;color:#9ca3af;margin:0 0 8px}
-    #det b{color:#e2e8f0;font-weight:600}
-    #cache{font-size:14px;color:#6b7280;margin:0 0 12px;min-height:16px}
-    #cache.cacheok{color:#34d399}
-    .ok{color:#34d399;text-shadow:0 0 10px rgba(52,211,153,.5)}.bad{color:#F43F5E;text-shadow:0 0 10px rgba(244,63,94,.5)}.warn{color:#F59E0B}
-    .progress{width:80%;max-width:300px;height:5px;background:rgba(124,58,237,.15);border-radius:4px;margin:16px auto;overflow:hidden}
-    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#7C3AED,#F43F5E,#7C3AED);background-size:200% 100%;border-radius:4px;transition:width .3s;animation:shimmer 1.5s linear infinite}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .check{display:none;font-size:32px;color:#34d399;margin:12px 0}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>alnafar | Cache 9.00-9.60</title>
+<link rel="stylesheet" href="../style.css">
 </head>
 <body>
-  <div id="brand"><h1><span>al</span>nafar</h1></div>
-  <div id="wrap">
-    <div id="msgs">جاري فحص الكاش...</div>
-    <div id="det">firmware <b>9.00-9.60</b></div>
-    <div id="cache"></div>
-    <div class="progress"><div class="progress-fill" id="progress"></div></div>
-    <div class="check" id="check">&#10003;</div>
-  </div>
-  <script>
-    (function(){
-      var progress=document.getElementById('progress');
-      var check=document.getElementById('check');
-      var state=document.getElementById('msgs');
-      var cache=document.getElementById('cache');
-      var ac=window.applicationCache;
-      function setProgress(p){progress.style.width=p+'%'}
-      function done(msg){state.textContent=msg;state.className='ok';cache.textContent='';progress.style.display='none';check.style.display='block'}
-      if(!ac){done('الكاش غير مدعوم');return}
-      ac.addEventListener('downloading',function(){cache.textContent='جاري التحميل...'},false);
-      ac.addEventListener('progress',function(e){if(e.total)setProgress(Math.round(e.loaded/e.total*100))},false);
-      ac.addEventListener('cached',function(){done('تم التخزين بنجاح')},false);
-      ac.addEventListener('noupdate',function(){done('محفوظ')},false);
-      ac.addEventListener('error',function(){done('خطأ في الكاش');progress.style.display='none'},false);
-      ac.addEventListener('obsolete',function(){done('الكاش قديم');progress.style.display='none'},false);
-      if(ac.status===ac.IDLE){done('محفوظ')}
-      else if(ac.status===ac.UPDATEREADY){try{ac.swapCache()}done('تم التحديث')}
-      else{ac.update()}
-    })();
-  </script>
+<script>
+history.replaceState(null,null,'index.html');
+var histlength=history.length;
+history.go(-histlength);
+
+function DLProgress(e){
+  var p=Math.round(e.loaded/e.total*100);
+  document.getElementById('msgs').innerHTML='جاري التحميل... '+p+'%';
+}
+function DisplayCacheProgress(){
+  document.getElementById('msgs').innerHTML='تم التخزين بنجاح ✔';
+  setTimeout(function(){document.getElementById('msgs').innerHTML='أغلق وأعد فتح المتصفح...';},1500);
+}
+window.applicationCache.addEventListener('progress',DLProgress,false);
+window.applicationCache.oncached=function(){DisplayCacheProgress()};
+window.applicationCache.onupdateready=function(){DisplayCacheProgress()};
+window.applicationCache.onerror=function(){
+  document.getElementById('msgs').innerHTML='خطأ في الكاش — امسح البيانات وأعد التثبيت';
+};
+</script>
+<h1>alnafar</h1>
+<hr><br>
+<h1 id="msgs" style="color:#00ff00">جاري فحص الكاش...</h1>
+<p>firmware 9.00-9.60</p>
 </body>
 </html>
