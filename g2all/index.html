@@ -8,18 +8,17 @@
   @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Russo+One&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{
-    height:100%;width:100%;overflow:hidden;
+    height:100%;width:100%;
     background:#0F0F23;color:#e2e8f0;
     font-family:'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif;
   }
-  html{overflow-x:hidden;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+  html{overflow-x:hidden;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
   html::-webkit-scrollbar{display:none}
   body{
     background:url('../background.png') no-repeat center center;
     background-size:cover;background-attachment:fixed;
     display:flex;flex-direction:column;
-    overflow:hidden;
-    min-height:100vh;max-height:100vh;
+    min-height:100vh;
   }
   body::before{
     content:'';position:fixed;inset:0;
@@ -45,7 +44,7 @@
     flex:1 1 auto;display:flex;flex-direction:column;
     align-items:center;justify-content:center;
     padding:clamp(12px,2vh,24px) clamp(16px,2vw,24px);max-width:700px;width:100%;margin:0 auto;
-    overflow:hidden;min-height:0;
+    min-height:0;
   }
   #msgs{
     font-family:'Russo One','Chakra Petch',sans-serif;
