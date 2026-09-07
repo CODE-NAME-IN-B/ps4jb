@@ -41,15 +41,16 @@ const STOP_BEFORE_DOUBLE = params.get("stop") === "beforedouble";
 function hostOk() {
     var m = document.getElementById("msgs");
     if (m) {
-        m.innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
+        m.innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+        m.className = "ok";
     }
 }
 
 function hostFail() {
     var m = document.getElementById("msgs");
     if (m) {
-        m.innerHTML = "Failed to Load! Restart Your Console ...";
-        m.style.color = "yellow";
+        m.innerHTML = "فشل التحميل — أعد تشغيل الجهاز";
+        m.className = "bad";
     }
 }
 

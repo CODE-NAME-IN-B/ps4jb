@@ -8,7 +8,6 @@ goldhen.bin
 background.png
 
 g2all/index.html
-g2all/700.manifest
 g2all/700/alert.js
 g2all/700/config.js
 g2all/700/psfree.js
@@ -37,7 +36,6 @@ g2all/700/kpatch/750.elf
 g2all/700/kpatch/800.elf
 g2all/700/kpatch/850.elf
 
-g2all/900.manifest
 g2all/900/alert.js
 g2all/900/config.js
 g2all/900/psfree.js
@@ -61,7 +59,6 @@ g2all/900/kpatch/900.elf
 g2all/900/kpatch/903.elf
 g2all/900/kpatch/950.elf
 
-g2all/css.manifest
 g2all/css/main.js
 g2all/css/lapse.js
 g2all/css/loader.js
@@ -76,7 +73,6 @@ g2all/css/ps4/patches/1050.bin
 g2all/css/ps4/patches/1100.bin
 g2all/css/ps4/patches/1102.bin
 
-g2all/slopkit.manifest
 g2all/slopkit/core.js
 g2all/slopkit/int64.js
 g2all/slopkit/mem.js

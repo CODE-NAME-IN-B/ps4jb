@@ -112,11 +112,12 @@ async function doJb() {
     }
 
     var msgsEl = document.getElementById("msgs");
-    msgsEl.innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
+    msgsEl.innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+    msgsEl.className = "ok";
     logger.info("===END===");
   } catch (e) {
     var msgsEl = document.getElementById("msgs");
-    msgsEl.innerHTML = "Failed to Load! Restart Your Console ...";
-    msgsEl.style.color = "yellow";
+    msgsEl.innerHTML = "فشل التحميل — أعد تشغيل الجهاز";
+    msgsEl.className = "bad";
   }
 }

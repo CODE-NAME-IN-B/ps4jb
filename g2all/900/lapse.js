@@ -1831,9 +1831,10 @@ function runPayload(PLfile) {
 kexploit().then(() => {
 	setTimeout(() => {
 		runPayload("./g2all/goldhen_2.4b18.10.bin");
-		document.getElementById("msgs").innerHTML = "GoldHEN v2.4b18.10 Loaded ...";
+		document.getElementById("msgs").innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+		document.getElementById("msgs").className = "ok";
 	},500);
 }).catch(() => {
-    document.getElementById("msgs").innerHTML = "Failed to Load! Restart Your Console ...";
-	document.getElementById("msgs").style.color = "yellow";
+    document.getElementById("msgs").innerHTML = "فشل التحميل — أعد تشغيل الجهاز";
+    document.getElementById("msgs").className = "bad";
 });

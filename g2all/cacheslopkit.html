@@ -1,35 +1,141 @@
 <!DOCTYPE html>
-<html manifest="slopkit.manifest">
+<html lang="ar" dir="ltr" manifest="slopkit.manifest">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>alnafar | Cache 11.50-13.00</title>
-<link rel="stylesheet" href="../style.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Russo+One&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    height:100%;width:100%;
+    background:#0F0F23;color:#e2e8f0;
+    font-family:'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif;
+  }
+  html{overflow-x:hidden;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+  html::-webkit-scrollbar{display:none}
+  body{
+    background:url('../background.png') no-repeat center center;
+    background-size:cover;background-attachment:fixed;
+    display:flex;flex-direction:column;
+    min-height:100vh;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
+    pointer-events:none;z-index:9999;
+  }
+  #brand{
+    flex:0 0 auto;text-align:center;padding:clamp(12px,2vh,20px) clamp(16px,2vw,24px);
+    background:rgba(15,15,35,.92);backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(124,58,237,.25);position:relative;
+  }
+  #brand h1{
+    font-family:'Russo One','Chakra Petch',sans-serif;
+    font-size:clamp(28px,3.5vw,48px);font-weight:700;
+    letter-spacing:.2em;color:#e2e8f0;margin:0;
+    text-shadow:0 0 10px #7C3AED,0 0 20px #7C3AED,0 0 40px rgba(124,58,237,.5),0 0 80px rgba(124,58,237,.3);
+  }
+  #brand h1 span{
+    background:linear-gradient(135deg,#7C3AED,#F43F5E);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 8px rgba(124,58,237,.6));
+  }
+  #brand small{
+    display:block;font-size:clamp(12px,1.5vw,18px);
+    color:#94a3b8;margin-top:6px;letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  #main{
+    flex:1 1 auto;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:clamp(12px,2vh,24px) clamp(16px,2vw,24px);max-width:700px;width:100%;margin:0 auto;
+    min-height:0;
+  }
+  #msgs{
+    font-family:'Russo One','Chakra Petch',sans-serif;
+    font-size:clamp(22px,3vw,36px);font-weight:700;
+    text-align:center;line-height:1.5;
+    text-shadow:0 0 10px rgba(124,58,237,.6),0 0 20px rgba(124,58,237,.4);
+    margin:0 0 clamp(12px,2vh,20px);transition:all .3s ease;
+  }
+  .ok{color:#34d399;text-shadow:0 0 10px rgba(52,211,153,.5)}
+  .bad{color:#F43F5E;text-shadow:0 0 10px rgba(244,63,94,.5)}
+  .warn{color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.5)}
+  #footer{
+    flex:0 0 auto;text-align:center;padding:clamp(6px,1vh,10px) clamp(8px,1vw,12px);
+    font-size:clamp(11px,1.2vw,14px);color:#f1f5f9;line-height:1.6;
+    background:rgba(15,15,35,.4);backdrop-filter:blur(4px);
+    border-top:1px solid rgba(124,58,237,.15);
+  }
+  #footer .store-name{
+    font-family:'Russo One','Chakra Petch',sans-serif;
+    font-size:clamp(14px,1.8vw,20px);font-weight:700;
+    letter-spacing:.03em;margin-bottom:2px;
+    background:linear-gradient(135deg,#7C3AED,#F43F5E,#7C3AED);
+    background-size:200% 200%;
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:gradientShift 3s ease infinite;
+    filter:drop-shadow(0 0 6px rgba(124,58,237,.4));
+  }
+  @keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  #footer .store-addr{font-size:clamp(10px,1.2vw,14px);color:#f1f5f9;line-height:1.5}
+  #footer .store-phone{
+    font-family:'Russo One','Chakra Petch',sans-serif;
+    font-size:clamp(12px,1.5vw,18px);font-weight:700;color:#34d399;
+    letter-spacing:.06em;margin-top:2px;
+    text-shadow:0 0 8px rgba(52,211,153,.4);
+  }
+  .fw-badge{
+    display:inline-block;padding:clamp(6px,1vw,10px) clamp(12px,1.5vw,18px);
+    border:1px solid rgba(124,58,237,.3);border-radius:8px;
+    background:rgba(15,15,35,.6);color:#94a3b8;
+    font-size:clamp(12px,1.5vw,16px);margin-top:clamp(8px,1vh,12px);
+  }
+</style>
 </head>
 <body>
+
+<div id="brand">
+  <h1><span>al</span>nafar</h1>
+  <small>PS4 Exploit Host</small>
+</div>
+
+<div id="main">
+  <h1 id="msgs">جاري فحص الكاش...</h1>
+  <div class="fw-badge">firmware 11.50-13.00</div>
+</div>
+
+<div id="footer">
+  <div class="store-name">الشاردة للإلكترونيات</div>
+  <div class="store-addr">شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا</div>
+  <div class="store-phone">0920595447</div>
+</div>
+
 <script>
 history.replaceState(null,null,'index.html');
 var histlength=history.length;
 history.go(-histlength);
 
+var msgsEl=document.getElementById('msgs');
+
 function DLProgress(e){
   var p=Math.round(e.loaded/e.total*100);
-  document.getElementById('msgs').innerHTML='جاري التحميل... '+p+'%';
+  msgsEl.innerHTML='جاري التحميل... '+p+'%';
+  msgsEl.className='warn';
 }
 function DisplayCacheProgress(){
-  document.getElementById('msgs').innerHTML='تم التخزين بنجاح ✔';
-  setTimeout(function(){document.getElementById('msgs').innerHTML='أغلق وأعد فتح المتصفح...';},1500);
+  msgsEl.innerHTML='تم التخزين بنجاح ✔';
+  msgsEl.className='ok';
+  setTimeout(function(){msgsEl.innerHTML='أغلق وأعد فتح المتصفح...';},1500);
 }
 window.applicationCache.addEventListener('progress',DLProgress,false);
 window.applicationCache.oncached=function(){DisplayCacheProgress()};
 window.applicationCache.onupdateready=function(){DisplayCacheProgress()};
 window.applicationCache.onerror=function(){
-  document.getElementById('msgs').innerHTML='خطأ في الكاش — امسح البيانات وأعد التثبيت';
+  msgsEl.innerHTML='خطأ في الكاش — امسح البيانات وأعد التثبيت';
+  msgsEl.className='bad';
 };
 </script>
-<h1>alnafar</h1>
-<hr><br>
-<h1 id="msgs" style="color:#00ff00">جاري فحص الكاش...</h1>
-<p>firmware 11.50-13.00</p>
 </body>
 </html>
