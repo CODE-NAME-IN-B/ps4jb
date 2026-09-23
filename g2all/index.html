@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,7 +14,7 @@
 </div>
 
 <div id="main">
-  <h1 id="msgs">جاري تحميل GoldHEN v2.4b18.12... انتظر</h1>
+  <h1 id="msgs" role="status" aria-live="polite">جاري تحميل GoldHEN v2.4b18.12... انتظر</h1>
   <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
 </div>
 
@@ -35,7 +35,11 @@ var msgsEl = document.getElementById("msgs");
 var progWrap = document.getElementById("progWrap");
 var progFill = document.getElementById("progFill");
 
-function setState(t, c) { msgsEl.innerHTML = t; msgsEl.className = c || ""; }
+function setState(t, c) {
+  msgsEl.innerHTML = t;
+  msgsEl.className = c || "";
+  msgsEl.setAttribute("role", c === "bad" ? "alert" : "status");
+}
 function setProgress(p) {
   if (!progWrap) return;
   progWrap.style.display = "block";

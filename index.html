@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="ltr" manifest="cache.manifest">
+<html lang="ar" dir="rtl" manifest="cache.manifest">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,7 +14,7 @@
 </div>
 
 <div id="main">
-  <h1 id="msgs">جاري الفحص...</h1>
+  <h1 id="msgs" role="status" aria-live="polite">جاري الفحص...</h1>
   <div id="logbox"></div>
   <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
 
@@ -62,7 +62,11 @@
     {key_min:1302,key_max:1352,label:'13.02-13.52',redirect:'g2all/index.html'}
   ];
 
-  function setState(t,c){msgsEl.textContent=t;msgsEl.className=c||''}
+  function setState(t,c){
+    msgsEl.innerHTML=t;
+    msgsEl.className=c||'';
+    msgsEl.setAttribute('role', c==='bad'?'alert':'status');
+  }
 
   var forced=null;
   var bugRe=/[?&]bug=([^&]+)/.exec(location.search);

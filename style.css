@@ -262,7 +262,7 @@ body::before {
   height: 1.1rem;
   accent-color: #7C3AED;
   cursor: pointer;
-  margin-right: 0.5rem;
+  margin: 0 0.5rem;
 }
 .checkbox-wrap input[type="checkbox"]:focus {
   outline: 3px solid #F43F5E;
