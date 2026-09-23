@@ -32,6 +32,11 @@ var progFill=document.getElementById('progFill');
 var cacheDone=false;
 var ac=window.applicationCache;
 
+function goIndex(){
+  try{ window.location.replace('index.html'); }
+  catch(e){ window.location.href='index.html'; }
+}
+
 function showOk(text){
   if(cacheDone && text!=='تم التخزين بنجاح') return;
   cacheDone=true;
@@ -39,7 +44,8 @@ function showOk(text){
   msgsEl.className='ok';
   progWrap.style.display='block';
   progFill.style.width='100%';
-  setTimeout(function(){msgsEl.innerHTML='أغلق وأعد فتح المتصفح...';},2000);
+  setTimeout(function(){ msgsEl.innerHTML='جاري التشغيل...'; },900);
+  setTimeout(goIndex,1600);
 }
 
 function showFatal(msg){
@@ -89,8 +95,8 @@ if(!ac){
   ac.addEventListener('noupdate',onCached,false);
   ac.addEventListener('error',onError,false);
   ac.addEventListener('obsolete',function(){ showFatal(); },false);
-  if(ac.status===ac.IDLE) showOk();
-  else if(ac.status===ac.UPDATEREADY) onCached();
+  if(ac.status===ac.IDLE) goIndex();
+  else if(ac.status===ac.UPDATEREADY){ try{ ac.swapCache(); }catch(e){} goIndex(); }
   else if(ac.status===ac.UNCACHED || ac.status===ac.OBSOLETE) showFatal();
   else showWait();
 }
