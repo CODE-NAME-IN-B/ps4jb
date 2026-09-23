@@ -118,9 +118,18 @@ if (forced === "lapse" || forced === "poops") {
       try { acF.swapCache(); } catch (e) {}
       loadExploit();
     }, false);
+    acF.addEventListener("noupdate", function () { loadExploit(); }, false);
     acF.addEventListener("error", function () {
-      setState("خطأ في الكاش — جاري المحاولة...", "bad");
-      setTimeout(loadExploit, 1000);
+      var s = acF.status;
+      if (s === acF.IDLE || s === acF.UPDATEREADY) {
+        if (s === acF.UPDATEREADY) { try { acF.swapCache(); } catch (e) {} }
+        loadExploit();
+      } else if (s === acF.UNCACHED || s === acF.OBSOLETE) {
+        setState("خطأ في الكاش — جاري المحاولة...", "bad");
+        setTimeout(loadExploit, 1000);
+      } else {
+        setState("انتظر... جاري تخزين الكاش", "warn");
+      }
     }, false);
   }
 } else if (!isPS4) {
@@ -157,9 +166,21 @@ if (forced === "lapse" || forced === "poops") {
         try { ac.swapCache(); } catch (e) {}
         loadExploit();
       }, false);
+      ac.addEventListener("noupdate", function () {
+        setState("الكاش جاهز — جاري التشغيل...", "ok");
+        loadExploit();
+      }, false);
       ac.addEventListener("error", function () {
-        setState("خطأ في الكاش — جاري المحاولة...", "bad");
-        setTimeout(loadExploit, 1000);
+        var s = ac.status;
+        if (s === ac.IDLE || s === ac.UPDATEREADY) {
+          if (s === ac.UPDATEREADY) { try { ac.swapCache(); } catch (e) {} }
+          loadExploit();
+        } else if (s === ac.UNCACHED || s === ac.OBSOLETE) {
+          setState("خطأ في الكاش — جاري المحاولة...", "bad");
+          setTimeout(loadExploit, 1000);
+        } else {
+          setState("انتظر... جاري تخزين الكاش", "warn");
+        }
       }, false);
     } else if (st === 4) {
       try { ac.swapCache(); } catch (e) {}

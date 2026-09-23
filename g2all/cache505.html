@@ -26,37 +26,74 @@
 </div>
 
 <script>
-history.replaceState(null,null,'index.html');
-var histlength=history.length;
-history.go(-histlength);
-
 var msgsEl=document.getElementById('msgs');
 var progWrap=document.getElementById('progWrap');
 var progFill=document.getElementById('progFill');
+var cacheDone=false;
+var ac=window.applicationCache;
+
+function showOk(text){
+  if(cacheDone && text!=='تم التخزين بنجاح') return;
+  cacheDone=true;
+  msgsEl.innerHTML=text||'تم التخزين بنجاح';
+  msgsEl.className='ok';
+  progWrap.style.display='block';
+  progFill.style.width='100%';
+  setTimeout(function(){msgsEl.innerHTML='أغلق وأعد فتح المتصفح...';},2000);
+}
+
+function showFatal(msg){
+  if(cacheDone) return;
+  if(msgsEl.className==='bad') return;
+  msgsEl.innerHTML=msg||'خطأ في الكاش — امسح البيانات وأعد التثبيت';
+  msgsEl.className='bad';
+  msgsEl.setAttribute('role','alert');
+}
+
+function showWait(){
+  if(cacheDone) return;
+  msgsEl.innerHTML='انتظر... جاري التخزين';
+  msgsEl.className='warn';
+}
 
 function DLProgress(e){
-  if(!e.total) return;
+  if(!e||!e.total||cacheDone) return;
   var p=Math.round(e.loaded/e.total*100);
   msgsEl.innerHTML='جاري التحميل... '+p+'%';
   msgsEl.className='warn';
   progWrap.style.display='block';
   progFill.style.width=p+'%';
 }
-function DisplayCacheProgress(){
-  msgsEl.innerHTML='تم التخزين بنجاح';
-  msgsEl.className='ok';
-  progWrap.style.display='block';
-  progFill.style.width='100%';
-  setTimeout(function(){msgsEl.innerHTML='أغلق وأعد فتح المتصفح...';},2000);
+
+function onCached(){
+  try{ if(ac && ac.status===ac.UPDATEREADY) ac.swapCache(); }catch(e){}
+  showOk('تم التخزين بنجاح');
 }
-window.applicationCache.addEventListener('progress',DLProgress,false);
-window.applicationCache.oncached=function(){DisplayCacheProgress()};
-window.applicationCache.onupdateready=function(){DisplayCacheProgress()};
-window.applicationCache.onerror=function(){
-  msgsEl.innerHTML='خطأ في الكاش — امسح البيانات وأعد التثبيت';
-  msgsEl.className='bad';
-  msgsEl.setAttribute('role','alert');
-};
+
+function onError(){
+  if(!ac || cacheDone) return;
+  var st=ac.status;
+  if(st===ac.IDLE){ showOk(); return; }
+  if(st===ac.UPDATEREADY){ onCached(); return; }
+  if(st===ac.DOWNLOADING || st===ac.CHECKING){ showWait(); return; }
+  if(st===ac.UNCACHED || st===ac.OBSOLETE){ showFatal(); return; }
+  showWait();
+}
+
+if(!ac){
+  showFatal();
+}else{
+  ac.addEventListener('progress',DLProgress,false);
+  ac.addEventListener('cached',onCached,false);
+  ac.addEventListener('updateready',onCached,false);
+  ac.addEventListener('noupdate',onCached,false);
+  ac.addEventListener('error',onError,false);
+  ac.addEventListener('obsolete',function(){ showFatal(); },false);
+  if(ac.status===ac.IDLE) showOk();
+  else if(ac.status===ac.UPDATEREADY) onCached();
+  else if(ac.status===ac.UNCACHED || ac.status===ac.OBSOLETE) showFatal();
+  else showWait();
+}
 </script>
 </body>
 </html>
