@@ -1,9 +1,10 @@
-CACHE MANIFEST 
+CACHE MANIFEST
+# alnafar 7.00-8.52 - GoldHEN v2.4b18.12
 
-CACHE: 
+CACHE:
 ../background.png
 ../style.css
-goldhen_2.4b18.10.bin
+goldhen_2.4b18.12.bin
 index.html
 700/alert.js
 700/config.js
@@ -33,5 +34,5 @@ index.html
 700/rop/800.js
 700/rop/850.js
 
-NETWORK: 
-* 
+NETWORK:
+*

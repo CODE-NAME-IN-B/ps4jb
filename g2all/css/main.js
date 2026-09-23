@@ -101,18 +101,22 @@ async function doJb() {
       jailbreak();
 
       const kpatches_rsp = await fetch("css/ps4/patches/" + constants.KPATCH);
+      if (!kpatches_rsp.ok) throw new Error("kpatch HTTP " + kpatches_rsp.status);
       const kpatches_buf = await kpatches_rsp.arrayBuffer();
       const kpatches_u8 = new Uint8Array(kpatches_buf);
+      if (kpatches_u8.length < 8) throw new Error("kpatch blob too small");
       kernel_patches(kpatches_u8);
 
-      const bin_rsp = await fetch("goldhen_2.4b18.10.bin");
+      const bin_rsp = await fetch("goldhen_2.4b18.12.bin");
+      if (!bin_rsp.ok) throw new Error("payload HTTP " + bin_rsp.status);
       const bin_buf = await bin_rsp.arrayBuffer();
       const bin_u8 = new Uint8Array(bin_buf);
+      if (bin_u8.length < 16 || bin_u8[0] !== 0xe9) throw new Error("bad payload magic");
       load_bin(bin_u8);
     }
 
     var msgsEl = document.getElementById("msgs");
-    msgsEl.innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+    msgsEl.innerHTML = "تم تحميل GoldHEN v2.4b18.12 ✔";
     msgsEl.className = "ok";
     logger.info("===END===");
   } catch (e) {

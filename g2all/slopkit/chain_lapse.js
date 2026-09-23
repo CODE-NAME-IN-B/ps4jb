@@ -1,4 +1,4 @@
-import { establishPrimitive } from "./core.js";
+import { establishPrimitive } from "./core.js?v=10";
 import { installWindowP } from "./mem.js";
 import { int64 } from "./int64.js";
 import { offsetsFor } from "./ps4_offsets.js";
@@ -36,7 +36,7 @@ const lines = [];
 function hostOk() {
     var m = document.getElementById("msgs");
     if (m) {
-        m.innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+        m.innerHTML = "تم تحميل GoldHEN v2.4b18.12 ✔";
         m.className = "ok";
     }
 }
@@ -278,7 +278,7 @@ function makeRpc(worker) {
 
         let payload = null;
         try {
-            const prsp = await fetch("goldhen_2.4b18.10.bin");
+            const prsp = await fetch("goldhen_2.4b18.12.bin");
             if (prsp.ok) payload = new Uint8Array(await prsp.arrayBuffer());
         } catch (e) {
             mark("PAYLOAD-FETCH-FAILED", (e && e.message) ? e.message : String(e));
@@ -288,6 +288,10 @@ function makeRpc(worker) {
                 + (payload[0] === 0xe9 ? " entry=e9-jmp-rel32"
                                        : " entry=NOT-e9")
             : "NOT LOADED -- stage 10 will not run");
+        if (payload && payload[0] !== 0xe9) {
+            mark("PAYLOAD-REJECTED", "bad magic (not 0xe9) -- refusing to run");
+            payload = null;
+        }
 
         const ITERS = params.has("iters") ? parseInt(params.get("iters"), 10) : 400;
         const SPRAY_NUM = params.has("spray")
@@ -3544,7 +3548,6 @@ function makeRpc(worker) {
                                                     : "returned " + rc);
                                             payloadRunning = launched;
                                             if (launched) {
-                                                hostOk();
                                                 mark("PAYLOAD-RUNNING", "bytes="
                                                     + payload.length + " entry="
                                                     + entry);
@@ -3843,6 +3846,9 @@ function makeRpc(worker) {
                 hostFail();
             }
         } else if (repaired && cleanupDone) {
+            if (payloadRunning) {
+                hostOk();
+            }
             mark("SAFE-TO-EXIT", "chunkX=freed-once-by-fd" + pktoptsTwins[0]
                 + " chunkY=leaked-0x80 pipes=+1ref-each"
                 + " leaks=2-pipe-pairs+0x80");

@@ -4,7 +4,7 @@
 
 ![alnafar](background.png)
 
-**PS4 Jailbreak Host — FW 7.00 - 13.00**
+**PS4 Jailbreak Host — FW 5.05 / 6.72 – 13.52**
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue)](https://code-name-in-b.github.io/ps4jb/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -15,20 +15,26 @@
 
 ## About
 
-**alnafar** is a PS4 exploit host that supports firmware versions **7.00 through 13.00**. It automatically detects your PS4's firmware via User-Agent and routes to the appropriate exploit chain.
+**alnafar** is a PS4 exploit host that supports firmware **5.05, 6.72, and 7.00 through 13.52**. It automatically detects your PS4's firmware via User-Agent and routes to the appropriate exploit chain. Ships **GoldHEN v2.4b18.12**.
 
 ### Supported Firmwares
 
 | FW | Exploit | Chain |
 |----|---------|-------|
+| 5.05 - 5.07 | WebKit + BPF | `g2all/505/` |
+| 6.72 | WebKit + jb | `672/` |
 | 7.00 - 8.52 | PSFree + Lapse | `g2all/700/` |
 | 9.00 - 9.60 | PSFree + Lapse | `g2all/900/` |
 | 10.00 - 11.02 | CSSFontFace | `g2all/css/` |
 | 11.50 - 12.02 | SLOP + Lapse | `g2all/slopkit/` |
 | 12.50 - 13.00 | SLOP + Poopsploit | `g2all/slopkit/` |
+| 13.02 - 13.52 | SLOP + jb | `g2all/slopkit/jb.js` |
 
 ### Unsupported
 
+- FW 5.00 - 5.04
+- FW 6.00 - 6.71
+- FW 8.53 - 8.99 / 9.61 - 9.99
 - FW 11.03 - 11.49
 - FW 12.03 - 12.49
 
@@ -56,8 +62,8 @@ This project would not exist without the incredible work of these developers and
 
 | Contributor | Contribution |
 |-------------|-------------|
-| **GamerHack** | Exploit host framework, firmware detection, AppCache routing |
-| **GoldHEN Team** | GoldHEN homebrew enabler payload (v2.4b18.10) |
+| **GamerHack** | Exploit host framework, firmware detection, AppCache routing, FW 5.05/6.72/13.02-13.52 chains |
+| **GoldHEN Team** | GoldHEN homebrew enabler payload (v2.4b18.12) |
 | **sleirsgoevy** | PS4 jailbreak reference project (ps4jb) |
 | **owendswang** | Vue After Free Lite reference project |
 

@@ -1,9 +1,10 @@
 CACHE MANIFEST
+# alnafar 10.00-11.02 - GoldHEN v2.4b18.12
 
 CACHE:
 ../background.png
 ../style.css
-goldhen_2.4b18.10.bin
+goldhen_2.4b18.12.bin
 index.html
 css/lapse.js
 css/loader.js

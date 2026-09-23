@@ -41,7 +41,7 @@ const STOP_BEFORE_DOUBLE = params.get("stop") === "beforedouble";
 function hostOk() {
     var m = document.getElementById("msgs");
     if (m) {
-        m.innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+        m.innerHTML = "تم تحميل GoldHEN v2.4b18.12 ✔";
         m.className = "ok";
     }
 }
@@ -211,13 +211,17 @@ let payloadRunning = false;
               + " sites=" + KPATCH_JMP_SITES.length
             : "blob=" + kpatchName + " MISSING");
         try {
-            const r = await fetch("goldhen_2.4b18.10.bin");
+            const r = await fetch("goldhen_2.4b18.12.bin");
             if (r.ok) payload = new Uint8Array(await r.arrayBuffer());
         } catch (e) { mark("PAYLOAD-FETCH-THREW", e.message); }
         mark("PAYLOAD-BLOB", payload
             ? "bytes=" + payload.length + " entry="
               + (payload[0] === 0xe9 ? "e9-jmp-rel32" : "NOT-e9")
             : "MISSING");
+        if (payload && payload[0] !== 0xe9) {
+            mark("PAYLOAD-REJECTED", "bad magic (not 0xe9) -- refusing to run");
+            payload = null;
+        }
 
         state("running the primitive...", "warn");
         await new Promise(r => setTimeout(r, 0));
@@ -2323,7 +2327,9 @@ let payloadRunning = false;
                             + " sites=" + KPATCH_JMP_SITES.length);
                     }
 
-                    if (payload && (kpatched || params.get("payload") === "1")
+                    if (rebootRequired) {
+                        mark("PAYLOAD-SKIPPED", "cleanup incomplete / zone dirty -- reboot required");
+                    } else if (payload && (kpatched || params.get("payload") === "1")
                         && params.get("payload") !== "0") {
                         state("payload...", "warn");
                         const sz = (payload.length + 0x3fff) & ~0x3fff;

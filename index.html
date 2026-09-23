@@ -4,206 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>alnafar | PS4 Exploit Host</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Russo+One&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{
-    height:100%;width:100%;
-    background:#0F0F23;color:#e2e8f0;
-    font-family:'Noto Kufi Arabic','Chakra Petch','Segoe UI',system-ui,sans-serif;
-  }
-  html{overflow-x:hidden;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
-  html::-webkit-scrollbar{display:none}
-  body{
-    background:url('background.png') no-repeat center center;
-    background-size:cover;background-attachment:fixed;
-    display:flex;flex-direction:column;
-    min-height:100vh;
-  }
-
-  /* CRT Scanlines Effect */
-  body::before{
-    content:'';position:fixed;inset:0;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
-    pointer-events:none;z-index:9999;
-  }
-
-  /* Header */
-  #brand{
-    flex:0 0 auto;
-    text-align:center;padding:clamp(12px,2vh,20px) clamp(16px,2vw,24px);
-    background:rgba(15,15,35,.92);backdrop-filter:blur(12px);
-    border-bottom:1px solid rgba(124,58,237,.25);
-    position:relative;
-  }
-  #brand h1{
-    font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(28px,3.5vw,48px);font-weight:700;
-    letter-spacing:.2em;color:#e2e8f0;margin:0;
-    text-shadow:0 0 10px #7C3AED,0 0 20px #7C3AED,0 0 40px rgba(124,58,237,.5),0 0 80px rgba(124,58,237,.3);
-  }
-  #brand h1 span{
-    background:linear-gradient(135deg,#7C3AED,#F43F5E);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    filter:drop-shadow(0 0 8px rgba(124,58,237,.6));
-  }
-  #brand small{
-    display:block;font-size:clamp(12px,1.5vw,18px);
-    color:#94a3b8;margin-top:6px;letter-spacing:.08em;
-    text-transform:uppercase;
-  }
-
-  /* Glitch Animation */
-  @keyframes glitch{
-    0%,100%{transform:translate(0)}
-    20%{transform:translate(-2px,2px)}
-    40%{transform:translate(-2px,-2px)}
-    60%{transform:translate(2px,2px)}
-    80%{transform:translate(2px,-2px)}
-  }
-  #brand h1:hover{animation:glitch .3s ease-in-out}
-
-  /* Main content */
-  #main{
-    flex:1 1 auto;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    padding:clamp(12px,2vh,24px) clamp(16px,2vw,24px);
-    max-width:700px;width:100%;margin:0 auto;
-    min-height:0;
-  }
-
-  #msgs{
-    font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(22px,3vw,36px);font-weight:700;
-    text-align:center;line-height:1.5;
-    text-shadow:0 0 10px rgba(124,58,237,.6),0 0 20px rgba(124,58,237,.4);
-    margin:0 0 clamp(12px,2vh,20px);
-    transition:all .3s ease;
-  }
-  .ok{color:#34d399;text-shadow:0 0 10px rgba(52,211,153,.5)}
-  .bad{color:#F43F5E;text-shadow:0 0 10px rgba(244,63,94,.5)}
-  .warn{color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.5)}
-
-  /* Log box */
-  #logbox{
-    width:100%;max-width:600px;
-    padding:clamp(10px,1.2vw,14px) clamp(12px,1.5vw,16px);
-    border:1px solid rgba(124,58,237,.2);border-radius:10px;
-    background:rgba(15,15,35,.8);backdrop-filter:blur(8px);
-    max-height:20vh;overflow-y:auto;
-    font-size:clamp(12px,1.5vw,16px);
-    font-family:'Chakra Petch',monospace;
-    color:#9ca3af;line-height:1.7;
-    margin-bottom:clamp(10px,1.5vh,16px);
-    box-shadow:0 0 15px rgba(124,58,237,.1),inset 0 0 30px rgba(0,0,0,.3);
-  }
-  #logbox{scrollbar-width:none;-ms-overflow-style:none}
-  #logbox::-webkit-scrollbar{display:none}
-  #logbox .ok{color:#4ade80}#logbox .bad{color:#FB7185}#logbox .warn{color:#FCD34D}#logbox .info{color:#A5B4FC}
-
-  /* Unsupported box */
-  .unsupported{
-    width:100%;max-width:600px;
-    padding:clamp(16px,2vw,24px);border:1px solid rgba(124,58,237,.2);
-    border-radius:12px;background:rgba(15,15,35,.85);backdrop-filter:blur(8px);
-    text-align:center;
-    box-shadow:0 0 20px rgba(124,58,237,.15);
-  }
-  .unsupported h2{font-size:clamp(16px,2.5vw,24px);color:#e2e8f0;margin:0 0 10px;font-weight:600}
-  .unsupported p{font-size:clamp(13px,1.8vw,18px);color:#9ca3af;line-height:1.7;margin:0}
-  .unsupported .fw-list{margin-top:12px;text-align:left;font-size:clamp(12px,1.5vw,16px);color:#94a3b8;line-height:1.9}
-  .unsupported .fw-list b{color:#e2e8f0}
-
-  /* Checkbox */
-  .checkbox-wrap{margin-top:clamp(10px,1.5vh,16px);text-align:center}
-  .checkbox-wrap label{
-    font-size:clamp(13px,1.8vw,18px);color:#e2e8f0;cursor:pointer;
-    display:inline-flex;align-items:center;gap:8px;
-    padding:clamp(6px,1vw,10px) clamp(12px,1.5vw,18px);border-radius:8px;
-    border:1px solid rgba(124,58,237,.3);
-    background:rgba(15,15,35,.6);
-    transition:all .2s ease;
-  }
-  .checkbox-wrap label:hover{
-    border-color:rgba(124,58,237,.6);
-    background:rgba(124,58,237,.15);
-  }
-  .checkbox-wrap input[type="checkbox"]{
-    width:clamp(16px,2vw,22px);height:clamp(16px,2vw,22px);
-    accent-color:#7C3AED;cursor:pointer;
-  }
-
-  /* Footer */
-  #footer{
-    flex:0 0 auto;text-align:center;
-    padding:clamp(6px,1vh,10px) clamp(8px,1vw,12px);
-    font-size:clamp(11px,1.2vw,14px);color:#e2e8f0;line-height:1.6;
-    background:rgba(15,15,35,.4);backdrop-filter:blur(4px);
-    border-top:1px solid rgba(124,58,237,.15);
-  }
-  #footer .store-name{
-    font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(14px,1.8vw,20px);font-weight:700;
-    letter-spacing:.03em;margin-bottom:2px;
-    background:linear-gradient(135deg,#7C3AED,#F43F5E,#7C3AED);
-    background-size:200% 200%;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    animation:gradientShift 3s ease infinite;
-    text-shadow:none;
-    filter:drop-shadow(0 0 6px rgba(124,58,237,.4));
-  }
-  @keyframes gradientShift{
-    0%,100%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-  }
-  #footer .store-addr{font-size:clamp(10px,1.2vw,14px);color:#f1f5f9;line-height:1.5}
-  #footer .store-phone{
-    font-family:'Russo One','Chakra Petch',sans-serif;
-    font-size:clamp(12px,1.5vw,18px);font-weight:700;color:#34d399;
-    letter-spacing:.06em;margin-top:2px;
-    text-shadow:0 0 8px rgba(52,211,153,.4);
-  }
-  #footer a{
-    color:#C4B5FD;text-decoration:none;font-weight:600;
-    transition:all .2s ease;font-size:clamp(10px,1.2vw,14px);
-  }
-  #footer a:hover{
-    color:#F43F5E;text-decoration:none;
-    text-shadow:0 0 8px rgba(244,63,94,.5);
-  }
-
-  /* Progress Bar (for cache loading) */
-  .progress-wrap{
-    width:100%;max-width:300px;height:4px;
-    background:rgba(124,58,237,.15);border-radius:4px;
-    margin:16px auto;overflow:hidden;display:none;
-  }
-  .progress-fill{
-    height:100%;width:0;
-    background:linear-gradient(90deg,#7C3AED,#F43F5E,#7C3AED);
-    background-size:200% 100%;
-    border-radius:4px;
-    animation:shimmer 1.5s linear infinite;
-    transition:width .3s ease;
-  }
-  @keyframes shimmer{
-    0%{background-position:200% 0}
-    100%{background-position:-200% 0}
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="brand">
   <h1><span>al</span>nafar</h1>
-  <small>PS4 Exploit Host</small>
+  <small>PS4 Exploit Host — FW 5.05 / 6.72 – 13.52</small>
 </div>
 
 <div id="main">
   <h1 id="msgs">جاري الفحص...</h1>
   <div id="logbox"></div>
-  <div id="动态"></div>
+  <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
 
   <div class="checkbox-wrap">
     <label>
@@ -219,6 +32,8 @@
   <div class="store-phone">0920595447</div>
   <br>
   <a href="https://github.com/CODE-NAME-IN-B">CODE-NAME-IN-B</a>
+  <span class="sep">·</span>
+  <a href="https://github.com/GamerHack/GamerHack.github.io">GamerHack</a>
 </div>
 
 <script>
@@ -229,7 +44,8 @@
   window.msgs=msgsEl;
 
   var logEl=document.getElementById('logbox');
-  var infoEl=document.getElementById('动态');
+  var progWrap=document.getElementById('progWrap');
+  var progFill=document.getElementById('progFill');
   function logMsg(msg,type){
     logEl.innerHTML+='<span class="'+(type||'info')+'">'+msg+'</span>\n';
     logEl.scrollTop=logEl.scrollHeight;
@@ -238,25 +54,30 @@
   logMsg('[alnafar] host initialized','info');
 
   var ROUTES=[
-    {key_min:700,key_max:852,label:'7.00-8.52',script:'g2all/700/alert.js',module:true},
-    {key_min:900,key_max:960,label:'9.00-9.60',script:'g2all/900/alert.js',module:true},
-    {key_min:1000,key_max:1300,label:'10.00-13.00',redirect:'g2all/index.html'}
+    {key_min:505,key_max:507,label:'5.05-5.07',redirect:'g2all/index.html'},
+    {key_min:672,key_max:672,label:'6.72',redirect:'672/index.html'},
+    {key_min:700,key_max:852,label:'7.00-8.52',redirect:'g2all/index.html'},
+    {key_min:900,key_max:960,label:'9.00-9.60',redirect:'g2all/index.html'},
+    {key_min:1000,key_max:1102,label:'10.00-11.02',redirect:'g2all/index.html'},
+    {key_min:1150,key_max:1202,label:'11.50-12.02',redirect:'g2all/index.html'},
+    {key_min:1250,key_max:1300,label:'12.50-13.00',redirect:'g2all/index.html'},
+    {key_min:1302,key_max:1352,label:'13.02-13.52',redirect:'g2all/index.html'}
   ];
 
   function setState(t,c){msgsEl.textContent=t;msgsEl.className=c||''}
 
   var params=new URLSearchParams(location.search);
+  var forced=params.get('bug');
 
   var key=null,fwnum=null,route=null;
   var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
 
   if(m){
     var major=parseInt(m[1],10);
-    var minor=parseInt(m[2],16);
-    var ms=minor.toString(16);
-    if(ms.length<2) ms='0'+ms;
+    var minor=parseInt(m[2],10);
+    var ms=minor<10?'0'+minor:''+minor;
     key=m[1]+'.'+ms;
-    fwnum=major*100+parseInt(ms,10);
+    fwnum=major*100+minor;
     logMsg('[detect] firmware: '+key+' ('+fwnum+')','info');
   }
 
@@ -267,9 +88,8 @@
     return null;
   }
 
-  var forced=params.get('bug');
   if(forced==='lapse'||forced==='poops'){
-    route={script:forced==='lapse'?'g2all/slopkit/chain_lapse.js':'g2all/slopkit/chain_poops.js',module:true,label:forced};
+    route={redirect:'g2all/index.html?bug='+forced,label:forced};
     logMsg('[route] forced chain: '+forced,'warn');
   }else if(!key){
     msgsEl.innerHTML='<span class="bad">هذه الصفحة مخصصة لجهاز PlayStation 4</span>';
@@ -280,16 +100,10 @@
     if(route){
       logMsg('[route] found: '+route.label,'ok');
     }else{
-      msgsEl.innerHTML='<span class="bad">الفيرموير '+key+' غير مدعوم بعد</span>';
+      msgsEl.innerHTML='<span class="bad">الفيرموير '+key+' غير مدعوم</span>';
       logMsg('[error] firmware not supported','bad');
       return;
     }
-  }
-
-  if(route.redirect){
-    logMsg('[route] redirecting to: '+route.redirect,'ok');
-    window.location.href=route.redirect;
-    return;
   }
 
   var autoRun=document.getElementById('autoRun');
@@ -302,106 +116,66 @@
   });
   logMsg('[settings] auto-run: '+(autoRun.checked?'enabled':'disabled'),'info');
 
-  var running=false;
-  function loadScript(rt,attempt){
-    attempt=attempt||1;
-    if(running) return;
+  function goRedirect(){
+    logMsg('[route] redirecting to: '+route.redirect,'ok');
+    window.location.href=route.redirect;
+  }
 
-    if(!autoRun.checked){
-      setState('جاهز — اضغط للتشغيل','ok');
-      logMsg('[wait] auto-run disabled, waiting for tap','info');
-      function fire(){
-        document.removeEventListener('click',fire);
-        document.removeEventListener('keydown',fire);
-        running=true;
-        setState('جاري تحميل '+rt.label+'...','warn');
-        logMsg('[exploit] starting chain: '+rt.label,'warn');
-        doLoad(rt,1);
-      }
-      document.addEventListener('click',fire);
-      document.addEventListener('keydown',fire);
-      return;
+  if(!autoRun.checked){
+    setState('جاهز — اضغط للتشغيل','ok');
+    logMsg('[wait] auto-run disabled, waiting for tap','info');
+    function fire(){
+      document.removeEventListener('click',fire);
+      document.removeEventListener('keydown',fire);
+      setState('جاري فتح '+route.label+'...','warn');
+      goRedirect();
     }
-
-    running=true;
-    setState('جاري تحميل '+rt.label+'...','warn');
-    logMsg('[exploit] starting chain: '+rt.label,'warn');
-    doLoad(rt,attempt);
+    document.addEventListener('click',fire);
+    document.addEventListener('keydown',fire);
+    return;
   }
 
-  function doLoad(rt,attempt){
-    var s=document.createElement('script');
-    s.async=false;s.src=rt.script;
-    if(rt.module) s.type='module';
-    s.onload=function(){
-      logMsg('[exploit] script loaded: '+rt.script,'ok');
-      if(rt.invoke&&typeof window[rt.invoke]==='function') window[rt.invoke]();
-    };
-    s.onerror=function(){
-      s.remove();
-      if(attempt<3){
-        logMsg('[error] load failed, retry '+attempt+'/3','bad');
-        setTimeout(function(){doLoad(rt,attempt+1)},attempt*900);
-      }else{
-        setState('فشل — أعد تشغيل الجهاز','bad');
-        logMsg('[error] could not load '+rt.script,'bad');
-      }
-    };
-    document.head.appendChild(s);
-  }
-
-  function go(){loadScript(route)}
+  setState('جاري فتح '+route.label+'...','warn');
 
   var ac=window.applicationCache;
-  if(!ac||!document.documentElement.hasAttribute('manifest')){
-    logMsg('[cache] no manifest, running directly','info');
-    go();
-  }else if(!navigator.onLine){
-    logMsg('[cache] offline, using cache','info');
-    go();
-  }else if(ac.status===ac.IDLE){
-    logMsg('[cache] already cached','ok');
-    go();
-  }else if(ac.status===ac.UPDATEREADY){
-    try{ac.swapCache()}catch(e){}
-    logMsg('[cache] update downloaded','ok');
-    go();
+  if(ac&&document.documentElement.hasAttribute('manifest')){
+    if(!navigator.onLine){
+      logMsg('[cache] offline, using cache','info');
+    }else if(ac.status===ac.DOWNLOADING||ac.status===ac.CHECKING){
+      logMsg('[cache] updating...','info');
+      ac.addEventListener('progress',function(e){
+        if(e&&e.total){
+          var p=Math.round((e.loaded/e.total)*100);
+          setState('جاري تحديث الكاش... '+p+'%','warn');
+          if(progWrap){progWrap.style.display='block';progFill.style.width=p+'%';}
+        }
+      },false);
+      ac.addEventListener('cached',function(){
+        logMsg('[cache] cached successfully','ok');
+        goRedirect();
+      },false);
+      ac.addEventListener('updateready',function(){
+        try{ac.swapCache()}catch(e){}
+        logMsg('[cache] update ready','ok');
+        goRedirect();
+      },false);
+      ac.addEventListener('noupdate',function(){
+        logMsg('[cache] no update','ok');
+        goRedirect();
+      },false);
+      ac.addEventListener('error',function(){
+        logMsg('[cache] update error, continuing','warn');
+        goRedirect();
+      },false);
+      return;
+    }else{
+      logMsg('[cache] ready (status '+ac.status+')','ok');
+    }
   }else{
-    logMsg('[cache] checking...','info');
-    ac.addEventListener('downloading',function(){
-      msgsEl.innerHTML='جاري تحميل الكاش...';
-      logMsg('[cache] downloading...','info');
-    },false);
-    ac.addEventListener('progress',function(e){
-      if(e&&e.total){
-        var p=Math.round((e.loaded/e.total)*100);
-        msgsEl.innerHTML='جاري تحميل الكاش... '+p+'%';
-      }
-    },false);
-    ac.addEventListener('cached',function(){
-      msgsEl.innerHTML='تم التخزين — جاري التشغيل...';
-      logMsg('[cache] cached successfully','ok');
-      go();
-    },false);
-    ac.addEventListener('updateready',function(){
-      try{ac.swapCache()}catch(e){}
-      logMsg('[cache] update ready','ok');
-      go();
-    },false);
-    ac.addEventListener('noupdate',function(){
-      logMsg('[cache] no update','ok');
-      go();
-    },false);
-    ac.addEventListener('error',function(){
-      msgsEl.innerHTML='خطأ في الكاش';
-      logMsg('[cache] error','bad');
-      go();
-    },false);
-    ac.addEventListener('obsolete',function(){
-      logMsg('[cache] obsolete','warn');
-      go();
-    },false);
+    logMsg('[cache] no manifest handler','info');
   }
+
+  goRedirect();
 })();
 </script>
 </body>

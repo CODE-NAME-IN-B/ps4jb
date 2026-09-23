@@ -1865,8 +1865,8 @@ function runPayload(path) {
 
 kexploit().then(() => {
 	setTimeout(() => {
-		runPayload("./g2all/goldhen_2.4b18.10.bin");
-		document.getElementById("msgs").innerHTML = "تم تحميل GoldHEN v2.4b18.10 ✔";
+		runPayload("./goldhen_2.4b18.12.bin");
+		document.getElementById("msgs").innerHTML = "تم تحميل GoldHEN v2.4b18.12 ✔";
 		document.getElementById("msgs").className = "ok";
 	},500);
 }).catch(() => {

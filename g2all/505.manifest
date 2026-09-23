@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# alnafar 5.05 - GoldHEN v2.4b18.12
+
+CACHE:
+../background.png
+../style.css
+goldhen_2.4b18.12.bin
+index.html
+505/exploit.js
+
+NETWORK:
+*
