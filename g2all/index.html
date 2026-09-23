@@ -45,8 +45,9 @@ function onScriptError() {
   setState("محتوى غير موجود — امسح بيانات المتصفح وأعد تثبيت الكاش", "bad");
 }
 
-var params = new URLSearchParams(location.search);
-var forced = params.get("bug");
+var forced = null;
+var bugRe = /[?&]bug=([^&]+)/.exec(location.search);
+if (bugRe) { try { forced = decodeURIComponent(bugRe[1].replace(/\+/g, " ")); } catch (e) { forced = bugRe[1]; } }
 
 function loadScript(src, isModule, onload) {
   var script = document.createElement("script");

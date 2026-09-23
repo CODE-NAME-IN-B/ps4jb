@@ -66,8 +66,9 @@
 
   function setState(t,c){msgsEl.textContent=t;msgsEl.className=c||''}
 
-  var params=new URLSearchParams(location.search);
-  var forced=params.get('bug');
+  var forced=null;
+  var bugRe=/[?&]bug=([^&]+)/.exec(location.search);
+  if(bugRe){try{forced=decodeURIComponent(bugRe[1].replace(/\+/g,' '));}catch(e){forced=bugRe[1];}}
 
   var key=null,fwnum=null,route=null;
   var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
