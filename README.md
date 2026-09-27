@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![alnafar](background.png)
+![alnafar](background.jpg)
 
 **PS4 Jailbreak Host — FW 5.05 / 6.72 – 13.52**
 

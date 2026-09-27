@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" manifest="cache.manifest">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,175 +10,221 @@
 
 <div id="brand">
   <h1><span>al</span>nafar</h1>
-  <small>PS4 Exploit Host — FW 5.05 / 6.72 – 13.52</small>
+  <small>PS4 Exploit Host — FW 5.05 / 6.72 / 7.00 – 13.52</small>
 </div>
 
 <div id="main">
-  <h1 id="msgs" role="status" aria-live="polite">جاري الفحص...</h1>
-  <div id="logbox"></div>
+  <h1 id="msgs" role="status" aria-live="polite">جاري فحص الفيرموير...</h1>
+  <div id="submsgs" role="status" aria-live="polite">لا تغلق المتصفح</div>
+
+  <div class="chip-row">
+    <span class="chip info" id="fwChip">الفيرموير: <b>--</b></span>
+    <span class="chip" id="routeChip">المضيف: <b>--</b></span>
+  </div>
+
+  <div class="progress-num" id="progNum">0%</div>
   <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
 
-  <div class="checkbox-wrap">
-    <label>
-      <input type="checkbox" id="autoRun" checked>
-      تشغيل تلقائي عند الفتح
-    </label>
+  <div class="unsupported" id="unsupported" style="display:none">
+    <h2>الفيرموير غير مدعوم</h2>
+    <p>النسخة الحالية تدعم 5.05 و 6.72 و 7.00 حتى 13.52.<br>أغلق هذه الصفحة.</p>
   </div>
+
+  <div class="checkbox-wrap" id="autoWrap">
+    <label><input type="checkbox" id="autoRun" checked> تشغيل تلقائي عند الفتح</label>
+  </div>
+
+  <div class="cta" id="cta" role="button" tabindex="0">اضغط X أو OK للمتابعة</div>
 </div>
 
 <div id="footer">
   <div class="store-name">الشاردة للإلكترونيات</div>
   <div class="store-addr">شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا</div>
   <div class="store-phone">0920595447</div>
-  <br>
-  <a href="https://github.com/CODE-NAME-IN-B">CODE-NAME-IN-B</a>
+  <div class="store-meta">GoldHEN v2.4b18.12 &middot; <a href="https://github.com/CODE-NAME-IN-B">CODE-NAME-IN-B</a></div>
 </div>
 
 <script>
-(function(){
+(function () {
   'use strict';
 
-  var msgsEl=document.getElementById('msgs');
-  window.msgs=msgsEl;
+  /* This page is a pure router. It deliberately carries NO manifest attribute:
+     a manifest here would define an AppCache scope for the whole origin that
+     overlaps the per-firmware manifests under /g2all and /672, and two nested
+     scopes for one origin is a well-known source of inconsistent
+     applicationCache.status reads on the PS4's WebKit. Each exploit host owns
+     its own cache; this page just forwards. */
 
-  var logEl=document.getElementById('logbox');
-  var progWrap=document.getElementById('progWrap');
-  var progFill=document.getElementById('progFill');
-  function logMsg(msg,type){
-    logEl.innerHTML+='<span class="'+(type||'info')+'">'+msg+'</span>\n';
-    logEl.scrollTop=logEl.scrollHeight;
+  var msgsEl    = document.getElementById('msgs');
+  var subEl     = document.getElementById('submsgs');
+  var fwChip    = document.getElementById('fwChip');
+  var routeChip = document.getElementById('routeChip');
+  var progWrap  = document.getElementById('progWrap');
+  var progFill  = document.getElementById('progFill');
+  var progNumEl = document.getElementById('progNum');
+  var unsupEl   = document.getElementById('unsupported');
+  var ctaEl     = document.getElementById('cta');
+  var autoWrap  = document.getElementById('autoWrap');
+  var autoRun   = document.getElementById('autoRun');
+
+  var going = false;
+  var progressTimer = 0;
+
+  function setState(text, cls) {
+    msgsEl.innerHTML = text;
+    msgsEl.className = cls || '';
+    msgsEl.setAttribute('role', cls === 'bad' ? 'alert' : 'status');
+  }
+  function setSub(text) { subEl.innerHTML = text; }
+  function setChip(el, label, value, cls) {
+    el.innerHTML = label + ': <b>' + value + '</b>';
+    el.className = 'chip' + (cls ? ' ' + cls : '');
+  }
+  function showProgress() {
+    progWrap.style.display = 'block';
+    progNumEl.className = 'progress-num on';
+    var p = 0;
+    progressTimer = setInterval(function () {
+      p += p < 70 ? 8 : 2;
+      if (p > 95) p = 95;
+      progFill.style.width = p + '%';
+      progNumEl.innerHTML = p + '%';
+    }, 220);
+  }
+  function hideProgress() {
+    if (progressTimer) { clearInterval(progressTimer); progressTimer = 0; }
+    progWrap.style.display = 'none';
+    progNumEl.className = 'progress-num';
   }
 
-  logMsg('[alnafar] host initialized','info');
-
-  var ROUTES=[
-    {key_min:505,key_max:507,label:'5.05-5.07',redirect:'g2all/index.html'},
-    {key_min:672,key_max:672,label:'6.72',redirect:'672/index.html'},
-    {key_min:700,key_max:852,label:'7.00-8.52',redirect:'g2all/index.html'},
-    {key_min:900,key_max:960,label:'9.00-9.60',redirect:'g2all/index.html'},
-    {key_min:1000,key_max:1102,label:'10.00-11.02',redirect:'g2all/index.html'},
-    {key_min:1150,key_max:1202,label:'11.50-12.02',redirect:'g2all/index.html'},
-    {key_min:1250,key_max:1300,label:'12.50-13.00',redirect:'g2all/index.html'},
-    {key_min:1302,key_max:1352,label:'13.02-13.52',redirect:'g2all/index.html'}
+  var ROUTES = [
+    { min: 505,  max: 507,  label: '5.05 – 5.07',  target: 'g2all/index.html' },
+    { min: 672,  max: 672,  label: '6.72',        target: '672/index.html'  },
+    { min: 700,  max: 852,  label: '7.00 – 8.52',  target: 'g2all/index.html' },
+    { min: 900,  max: 960,  label: '9.00 – 9.60',  target: 'g2all/index.html' },
+    { min: 1000, max: 1102, label: '10.00 – 11.02', target: 'g2all/index.html' },
+    { min: 1150, max: 1202, label: '11.50 – 12.02', target: 'g2all/index.html' },
+    { min: 1250, max: 1300, label: '12.50 – 13.00', target: 'g2all/index.html' },
+    { min: 1302, max: 1352, label: '13.02 – 13.52', target: 'g2all/index.html' }
   ];
 
-  function setState(t,c){
-    msgsEl.innerHTML=t;
-    msgsEl.className=c||'';
-    msgsEl.setAttribute('role', c==='bad'?'alert':'status');
-  }
-
-  var forced=null;
-  var bugRe=/[?&]bug=([^&]+)/.exec(location.search);
-  if(bugRe){try{forced=decodeURIComponent(bugRe[1].replace(/\+/g,' '));}catch(e){forced=bugRe[1];}}
-
-  var key=null,fwnum=null,route=null;
-  var m=/PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
-
-  if(m){
-    var major=parseInt(m[1],10);
-    var minor=parseInt(m[2],10);
-    var ms=minor<10?'0'+minor:''+minor;
-    key=m[1]+'.'+ms;
-    fwnum=major*100+minor;
-    logMsg('[detect] firmware: '+key+' ('+fwnum+')','info');
-  }
-
-  function findRoute(fw){
-    for(var i=0;i<ROUTES.length;i++){
-      if(fw>=ROUTES[i].key_min&&fw<=ROUTES[i].key_max) return ROUTES[i];
+  function routeFor(fw) {
+    for (var i = 0; i < ROUTES.length; i++) {
+      if (fw >= ROUTES[i].min && fw <= ROUTES[i].max) return ROUTES[i];
     }
     return null;
   }
 
-  if(forced==='lapse'||forced==='poops'){
-    route={redirect:'g2all/index.html?bug='+forced,label:forced};
-    logMsg('[route] forced chain: '+forced,'warn');
-  }else if(!key){
-    msgsEl.innerHTML='<span class="bad">هذه الصفحة مخصصة لجهاز PlayStation 4</span>';
-    logMsg('[error] not a PS4','warn');
-    return;
-  }else{
-    route=findRoute(fwnum);
-    if(route){
-      logMsg('[route] found: '+route.label,'ok');
-    }else{
-      msgsEl.innerHTML='<span class="bad">الفيرموير '+key+' غير مدعوم</span>';
-      logMsg('[error] firmware not supported','bad');
-      return;
-    }
+  function go(target) {
+    if (going) return;
+    going = true;
+    hideProgress();
+    try { window.location.replace(target); }
+    catch (e) { window.location.href = target; }
   }
 
-  var autoRun=document.getElementById('autoRun');
-  var autoRunKey='alnafar_autorun';
-  var saved=localStorage.getItem(autoRunKey);
-  if(saved!==null) autoRun.checked=saved==='true';
-  autoRun.addEventListener('change',function(){
-    localStorage.setItem(autoRunKey,autoRun.checked);
-    logMsg('[settings] auto-run: '+(autoRun.checked?'enabled':'disabled'),'info');
+  function showUnsupported(msg) {
+    hideProgress();
+    autoWrap.style.display = 'none';
+    unsupEl.style.display = 'block';
+    setChip(routeChip, 'المضيف', 'متوقف', 'bad');
+    setState(msg, 'bad');
+    setSub('النسخة الحالية تدعم 5.05 و 6.72 و 7.00 حتى 13.52');
+  }
+
+  /* -------------------------------------------------- firmware detection */
+  var m = /PlayStation\s*4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+  var key = null, fwnum = null;
+  if (m) {
+    var major = parseInt(m[1], 10);
+    var minor = parseInt(m[2], 10);
+    var ms = minor < 10 ? '0' + minor : '' + minor;
+    key = m[1] + '.' + ms;
+    fwnum = major * 100 + minor;
+  }
+
+  var forced = null;
+  var bugRe = /[?&]bug=([^&]+)/.exec(location.search);
+  if (bugRe) {
+    try { forced = decodeURIComponent(bugRe[1].replace(/\+/g, ' ')); }
+    catch (e) { forced = bugRe[1]; }
+  }
+
+  /* ------------------------------------------------------ auto-run toggle */
+  var AUTO_KEY = 'alnafar_autorun';
+  try {
+    var saved = localStorage.getItem(AUTO_KEY);
+    if (saved !== null) autoRun.checked = (saved === 'true');
+  } catch (e) { /* private mode — keep the default */ }
+  autoRun.addEventListener('change', function () {
+    try { localStorage.setItem(AUTO_KEY, autoRun.checked ? 'true' : 'false'); }
+    catch (e) {}
   });
-  logMsg('[settings] auto-run: '+(autoRun.checked?'enabled':'disabled'),'info');
 
-  function goRedirect(){
-    logMsg('[route] redirecting to: '+route.redirect,'ok');
-    window.location.href=route.redirect;
+  function armCta(label) {
+    ctaEl.innerHTML = label;
+    ctaEl.className = 'cta on';
+    function fire() {
+      document.removeEventListener('click', fire);
+      document.removeEventListener('keydown', fire);
+      go(pendingTarget);
+    }
+    document.addEventListener('click', fire);
+    document.addEventListener('keydown', fire);
   }
 
-  if(!autoRun.checked){
-    setState('جاهز — اضغط للتشغيل','ok');
-    logMsg('[wait] auto-run disabled, waiting for tap','info');
-    function fire(){
-      document.removeEventListener('click',fire);
-      document.removeEventListener('keydown',fire);
-      setState('جاري فتح '+route.label+'...','warn');
-      goRedirect();
+  /* ------------------------------------------------------------ dispatch */
+  var pendingTarget = null;
+  var pendingLabel = '';
+
+  if (forced === 'lapse' || forced === 'poops') {
+    pendingTarget = 'g2all/index.html?bug=' + forced;
+    pendingLabel = 'تجريبي — ' + forced;
+    setChip(fwChip, 'الفيرموير', key || 'تجريبي', 'info');
+    setChip(routeChip, 'المضيف', pendingLabel, 'warn');
+  } else if (!key) {
+    setChip(fwChip, 'الفيرموير', 'غير PS4', 'bad');
+    showUnsupported('هذه الصفحة مخصصة لجهاز PlayStation 4');
+    setSub('ادخل الرابط من متصفح جهاز PS4 — FW 5.05 و 6.72 و 7.00 حتى 13.52');
+  } else {
+    var route = routeFor(fwnum);
+    if (!route) {
+      setChip(fwChip, 'الفيرموير', key, 'bad');
+      showUnsupported('الفيرموير ' + key + ' غير مدعوم');
+    } else {
+      pendingTarget = route.target;
+      pendingLabel = route.label;
+      setChip(fwChip, 'الفيرموير', key, 'info');
+      setChip(routeChip, 'المضيف', route.label, 'ok');
     }
-    document.addEventListener('click',fire);
-    document.addEventListener('keydown',fire);
+  }
+
+  if (!pendingTarget) return;
+
+  if (!autoRun.checked) {
+    hideProgress();
+    setState('جاهز — اضغط للتشغيل', 'ok');
+    setSub('التشغيل التلقائي معطّل — اضغط X أو OK للمتابعة');
+    armCta('اضغط X أو OK لبدء التشغيل');
     return;
   }
 
-  setState('جاري فتح '+route.label+'...','warn');
+  setState('جاري فتح مضيف ' + pendingLabel + '...', 'warn');
+  setSub('لا تغلق المتصفح — جاري التحويل');
+  showProgress();
 
-  var ac=window.applicationCache;
-  if(ac&&document.documentElement.hasAttribute('manifest')){
-    if(!navigator.onLine){
-      logMsg('[cache] offline, using cache','info');
-    }else if(ac.status===ac.DOWNLOADING||ac.status===ac.CHECKING){
-      logMsg('[cache] updating...','info');
-      ac.addEventListener('progress',function(e){
-        if(e&&e.total){
-          var p=Math.round((e.loaded/e.total)*100);
-          setState('جاري تحديث الكاش... '+p+'%','warn');
-          if(progWrap){progWrap.style.display='block';progFill.style.width=p+'%';}
-        }
-      },false);
-      ac.addEventListener('cached',function(){
-        logMsg('[cache] cached successfully','ok');
-        goRedirect();
-      },false);
-      ac.addEventListener('updateready',function(){
-        try{ac.swapCache()}catch(e){}
-        logMsg('[cache] update ready','ok');
-        goRedirect();
-      },false);
-      ac.addEventListener('noupdate',function(){
-        logMsg('[cache] no update','ok');
-        goRedirect();
-      },false);
-      ac.addEventListener('error',function(){
-        logMsg('[cache] update error, continuing','warn');
-        goRedirect();
-      },false);
-      return;
-    }else{
-      logMsg('[cache] ready (status '+ac.status+')','ok');
-    }
-  }else{
-    logMsg('[cache] no manifest handler','info');
-  }
+  /* Safety net: if the navigation is swallowed by the console browser, the
+     user gets a button instead of a frozen screen. */
+  setTimeout(function () {
+    if (going) return;
+    hideProgress();
+    setState('تعذر التحويل التلقائي', 'warn');
+    setSub('اضغط X أو OK لفتح المضيف يدويا');
+    armCta('اضغط X أو OK لفتح المضيف');
+  }, 6000);
 
-  goRedirect();
+  /* Beat so the status line is actually painted before we navigate away. */
+  setTimeout(function () { go(pendingTarget); }, 400);
 })();
 </script>
 </body>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" manifest="cache.manifest">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>alnafar | PS4 6.72 GoldHEN</title>
 <link rel="stylesheet" href="../style.css">
 <script src="jb.js"></script>
@@ -18,27 +20,43 @@ var leaker_obj={a:0};var leaker_arr=new Uint32Array(6);var oob_slave=new Uint8Ar
 <small>PS4 6.72 — GoldHEN Host</small>
 </div>
 <div id="main">
-<div class="fw-row">
-<span class="counter ok">Pass = <span id="passCounter">0</span></span>
-<span class="fw-badge">firmware 6.72</span>
-<span class="counter bad">Fail = <span id="failCounter">0</span></span>
+<div class="chip-row">
+<span class="chip ok">نجاحات <b id="passCounter">0</b></span>
+<span class="chip info">الفيرموير <b>6.72</b></span>
+<span class="chip bad">إخفاقات <b id="failCounter">0</b></span>
 </div>
 <h1 id="msgs" role="status" aria-live="polite">جاري تحميل GoldHEN v2.4b18.12... انتظر</h1>
-<p style="font-size:0.75rem;color:#94A3B8;margin-top:0.5rem;">
+<div id="submsgs" role="status" aria-live="polite">لا تغلق المتصفح</div>
+<p class="store-meta" style="margin-top:0.75rem;">
 شكر خاص: <a href="https://twitter.com/sleirsgoevy">@sleirsgoevy</a>
-· Leeful · <a href="https://twitter.com/_AlAzif">@_AlAzif</a>
+<span class="sep">&middot;</span> Leeful <span class="sep">&middot;</span> <a href="https://twitter.com/_AlAzif">@_AlAzif</a>
 </p>
 </div>
 <div id="footer">
 <div class="store-name">الشاردة للإلكترونيات</div>
 <div class="store-addr">شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا</div>
 <div class="store-phone">0920595447</div>
+<div class="store-meta">GoldHEN v2.4b18.12 &middot; 6.72</div>
 </div>
 <script>
-if (localStorage.passcount == null) localStorage.passcount=0;
-window.passCounter.innerHTML=localStorage.passcount;
-if (localStorage.failcount == null) localStorage.failcount=0;
-window.failCounter.innerHTML=localStorage.failcount;
+/* Named-access-on-window (window.passCounter) is fragile on the console
+   WebKit builds; bind explicitly instead. The pass/fail tallies are read and
+   written by the payload, so localStorage must be coerced to a number — a
+   stored string would otherwise make "++count" concatenate. */
+(function(){
+  function num(key){
+    var v = 0;
+    try { v = parseInt(localStorage.getItem(key), 10); } catch(e){}
+    if (isNaN(v) || v < 0) v = 0;
+    try { localStorage.setItem(key, String(v)); } catch(e){}
+    return v;
+  }
+  var passes = num('passcount'), fails = num('failcount');
+  window.passCounter = document.getElementById('passCounter');
+  window.failCounter = document.getElementById('failCounter');
+  if (window.passCounter) window.passCounter.innerHTML = passes;
+  if (window.failCounter) window.failCounter.innerHTML = fails;
+})();
 
 function load_goldhen(){
 LoadedMSG="GoldHEN v2.4b18.12 Loaded ...";
