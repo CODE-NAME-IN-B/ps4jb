@@ -1,0 +1,14 @@
+CACHE MANIFEST
+# rev menu-only — like the reference: this cache holds just the menu, each
+# host directory under /505 /672 /700 /900 /css /slopkit installs its own
+# cache. Regenerate nothing here by hand; host manifests come from
+# tools/gen_manifests.py.
+CACHE:
+./
+index.html
+background.jpg
+style.css
+favicon.ico
+
+NETWORK:
+*

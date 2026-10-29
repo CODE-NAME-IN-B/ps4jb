@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" manifest="navigation.manifest">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,31 +10,57 @@
 
 <div id="brand">
   <h1><span>al</span>nafar</h1>
-  <small>PS4 Exploit Host — FW 5.05 / 6.72 / 7.00 – 13.52</small>
+  <small>PS4 Exploit Host — FW 5.05 / 6.72 / 7.00 – 13.52 · GoldHEN v2.4b18.12</small>
 </div>
 
 <div id="main">
-  <h1 id="msgs" role="status" aria-live="polite">جاري فحص الفيرموير...</h1>
-  <div id="submsgs" role="status" aria-live="polite">لا تغلق المتصفح</div>
+  <h1 id="msgs" role="status" aria-live="polite">اختر نسخة جهازك</h1>
+  <div id="submsgs" role="status" aria-live="polite">اختر مضيف الفيرموير المطابق لجهازك — تدعم 5.05 و 6.72 و 7.00 حتى 13.52</div>
 
   <div class="chip-row">
-    <span class="chip info" id="fwChip">الفيرموير: <b>--</b></span>
-    <span class="chip" id="routeChip">المضيف: <b>--</b></span>
+    <span class="chip info" id="fwChip">الفيرموير: <b>فحص</b></span>
+    <span class="chip" id="cacheChip">كاش القائمة: <b>فحص</b></span>
   </div>
 
-  <div class="progress-num" id="progNum">0%</div>
-  <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
+  <div class="menu" id="menu">
+    <div class="menu-head">
+      <span class="menu-title">المضيفون المتاحون</span>
+      <span class="menu-hint">&uarr; &darr; للتنقل &nbsp; X للفتح</span>
+    </div>
 
-  <div class="unsupported" id="unsupported" style="display:none">
-    <h2>الفيرموير غير مدعوم</h2>
-    <p>النسخة الحالية تدعم 5.05 و 6.72 و 7.00 حتى 13.52.<br>أغلق هذه الصفحة.</p>
+    <a class="row" href="505/index.html" data-min="505" data-max="507">
+      <span class="num">01</span>
+      <span class="txt"><span class="name">5.05 – 5.07</span><span class="meta">WebKit + BPF · مضيف مستقل</span></span>
+      <span class="go">[ فتح ]</span>
+    </a>
+    <a class="row" href="672/index.html" data-min="672" data-max="672">
+      <span class="num">02</span>
+      <span class="txt"><span class="name">6.72</span><span class="meta">سلسلة jb المباشرة · مضيف مستقل</span></span>
+      <span class="go">[ فتح ]</span>
+    </a>
+    <a class="row" href="700/index.html" data-min="700" data-max="852">
+      <span class="num">03</span>
+      <span class="txt"><span class="name">7.00 – 8.52</span><span class="meta">PSFree + Lapse · مضيف مستقل</span></span>
+      <span class="go">[ فتح ]</span>
+    </a>
+    <a class="row" href="900/index.html" data-min="900" data-max="960">
+      <span class="num">04</span>
+      <span class="txt"><span class="name">9.00 – 9.60</span><span class="meta">PSFree + Lapse · مضيف مستقل</span></span>
+      <span class="go">[ فتح ]</span>
+    </a>
+    <a class="row" href="css/index.html" data-min="1000" data-max="1102">
+      <span class="num">05</span>
+      <span class="txt"><span class="name">10.00 – 11.02</span><span class="meta">CSSFontFace · مضيف مستقل</span></span>
+      <span class="go">[ فتح ]</span>
+    </a>
+    <a class="row" href="slopkit/index.html" data-min="1150" data-max="1352">
+      <span class="num">06</span>
+      <span class="txt"><span class="name">11.50 – 13.52</span><span class="meta">SLOP + Lapse / Poops / jb حسب النسخة</span></span>
+      <span class="go">[ فتح ]</span>
+    </a>
+
+    <div class="menu-foot" id="menuFoot">أول دخول لمضيف: سيطلب تثبيت الكاش — انتظر 100% ثم أغلق المتصفح وافتحه من جديد</div>
   </div>
-
-  <div class="checkbox-wrap" id="autoWrap">
-    <label><input type="checkbox" id="autoRun" checked> تشغيل تلقائي عند الفتح</label>
-  </div>
-
-  <div class="cta" id="cta" role="button" tabindex="0">اضغط X أو OK للمتابعة</div>
 </div>
 
 <div id="footer">
@@ -48,91 +74,22 @@
 (function () {
   'use strict';
 
-  /* This page is a pure router. It deliberately carries NO manifest attribute:
-     a manifest here would define an AppCache scope for the whole origin that
-     overlaps the per-firmware manifests under /g2all and /672, and two nested
-     scopes for one origin is a well-known source of inconsistent
-     applicationCache.status reads on the PS4's WebKit. Each exploit host owns
-     its own cache; this page just forwards. */
+  /* psx8-style menu: the navigation cache holds ONLY this menu. Every host
+     directory installs and serves its own cache — no forwarding, no router,
+     no replaceState games between pages. The menu never navigates on its
+     own: the rows are plain links, and the PS4 browser moves its visible
+     focus pointer natively with the D-pad (we never intercept arrows). */
 
-  var msgsEl    = document.getElementById('msgs');
-  var subEl     = document.getElementById('submsgs');
   var fwChip    = document.getElementById('fwChip');
-  var routeChip = document.getElementById('routeChip');
-  var progWrap  = document.getElementById('progWrap');
-  var progFill  = document.getElementById('progFill');
-  var progNumEl = document.getElementById('progNum');
-  var unsupEl   = document.getElementById('unsupported');
-  var ctaEl     = document.getElementById('cta');
-  var autoWrap  = document.getElementById('autoWrap');
-  var autoRun   = document.getElementById('autoRun');
+  var cacheChip = document.getElementById('cacheChip');
 
-  var going = false;
-  var progressTimer = 0;
-
-  function setState(text, cls) {
-    msgsEl.innerHTML = text;
-    msgsEl.className = cls || '';
-    msgsEl.setAttribute('role', cls === 'bad' ? 'alert' : 'status');
-  }
-  function setSub(text) { subEl.innerHTML = text; }
   function setChip(el, label, value, cls) {
     el.innerHTML = label + ': <b>' + value + '</b>';
     el.className = 'chip' + (cls ? ' ' + cls : '');
   }
-  function showProgress() {
-    progWrap.style.display = 'block';
-    progNumEl.className = 'progress-num on';
-    var p = 0;
-    progressTimer = setInterval(function () {
-      p += p < 70 ? 8 : 2;
-      if (p > 95) p = 95;
-      progFill.style.width = p + '%';
-      progNumEl.innerHTML = p + '%';
-    }, 220);
-  }
-  function hideProgress() {
-    if (progressTimer) { clearInterval(progressTimer); progressTimer = 0; }
-    progWrap.style.display = 'none';
-    progNumEl.className = 'progress-num';
-  }
 
-  var ROUTES = [
-    { min: 505,  max: 507,  label: '5.05 – 5.07',  target: 'g2all/index.html' },
-    { min: 672,  max: 672,  label: '6.72',        target: '672/index.html'  },
-    { min: 700,  max: 852,  label: '7.00 – 8.52',  target: 'g2all/index.html' },
-    { min: 900,  max: 960,  label: '9.00 – 9.60',  target: 'g2all/index.html' },
-    { min: 1000, max: 1102, label: '10.00 – 11.02', target: 'g2all/index.html' },
-    { min: 1150, max: 1202, label: '11.50 – 12.02', target: 'g2all/index.html' },
-    { min: 1250, max: 1300, label: '12.50 – 13.00', target: 'g2all/index.html' },
-    { min: 1302, max: 1352, label: '13.02 – 13.52', target: 'g2all/index.html' }
-  ];
-
-  function routeFor(fw) {
-    for (var i = 0; i < ROUTES.length; i++) {
-      if (fw >= ROUTES[i].min && fw <= ROUTES[i].max) return ROUTES[i];
-    }
-    return null;
-  }
-
-  function go(target) {
-    if (going) return;
-    going = true;
-    hideProgress();
-    try { window.location.replace(target); }
-    catch (e) { window.location.href = target; }
-  }
-
-  function showUnsupported(msg) {
-    hideProgress();
-    autoWrap.style.display = 'none';
-    unsupEl.style.display = 'block';
-    setChip(routeChip, 'المضيف', 'متوقف', 'bad');
-    setState(msg, 'bad');
-    setSub('النسخة الحالية تدعم 5.05 و 6.72 و 7.00 حتى 13.52');
-  }
-
-  /* -------------------------------------------------- firmware detection */
+  /* ------------------------------------------------ firmware detection */
+  /* Same parse the old router used — "9.03" and "11.02" must survive. */
   var m = /PlayStation\s*4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
   var key = null, fwnum = null;
   if (m) {
@@ -143,88 +100,58 @@
     fwnum = major * 100 + minor;
   }
 
-  var forced = null;
-  var bugRe = /[?&]bug=([^&]+)/.exec(location.search);
-  if (bugRe) {
-    try { forced = decodeURIComponent(bugRe[1].replace(/\+/g, ' ')); }
-    catch (e) { forced = bugRe[1]; }
-  }
-
-  /* ------------------------------------------------------ auto-run toggle */
-  var AUTO_KEY = 'alnafar_autorun';
-  try {
-    var saved = localStorage.getItem(AUTO_KEY);
-    if (saved !== null) autoRun.checked = (saved === 'true');
-  } catch (e) { /* private mode — keep the default */ }
-  autoRun.addEventListener('change', function () {
-    try { localStorage.setItem(AUTO_KEY, autoRun.checked ? 'true' : 'false'); }
-    catch (e) {}
-  });
-
-  function armCta(label) {
-    ctaEl.innerHTML = label;
-    ctaEl.className = 'cta on';
-    function fire() {
-      document.removeEventListener('click', fire);
-      document.removeEventListener('keydown', fire);
-      go(pendingTarget);
+  var hit = null;
+  var rows = document.querySelectorAll('.row');
+  for (var i = 0; i < rows.length; i++) {
+    var min = parseInt(rows[i].getAttribute('data-min'), 10);
+    var max = parseInt(rows[i].getAttribute('data-max'), 10);
+    if (fwnum !== null && fwnum >= min && fwnum <= max) {
+      hit = rows[i];
+      rows[i].className += ' hit';
+      var badge = document.createElement('span');
+      badge.className = 'hit-badge';
+      badge.innerHTML = 'يناسب جهازك';
+      rows[i].appendChild(badge);
     }
-    document.addEventListener('click', fire);
-    document.addEventListener('keydown', fire);
   }
 
-  /* ------------------------------------------------------------ dispatch */
-  var pendingTarget = null;
-  var pendingLabel = '';
-
-  if (forced === 'lapse' || forced === 'poops') {
-    pendingTarget = 'g2all/index.html?bug=' + forced;
-    pendingLabel = 'تجريبي — ' + forced;
-    setChip(fwChip, 'الفيرموير', key || 'تجريبي', 'info');
-    setChip(routeChip, 'المضيف', pendingLabel, 'warn');
-  } else if (!key) {
+  if (!m) {
     setChip(fwChip, 'الفيرموير', 'غير PS4', 'bad');
-    showUnsupported('هذه الصفحة مخصصة لجهاز PlayStation 4');
-    setSub('ادخل الرابط من متصفح جهاز PS4 — FW 5.05 و 6.72 و 7.00 حتى 13.52');
+  } else if (hit) {
+    setChip(fwChip, 'الفيرموير', key, 'ok');
   } else {
-    var route = routeFor(fwnum);
-    if (!route) {
-      setChip(fwChip, 'الفيرموير', key, 'bad');
-      showUnsupported('الفيرموير ' + key + ' غير مدعوم');
-    } else {
-      pendingTarget = route.target;
-      pendingLabel = route.label;
-      setChip(fwChip, 'الفيرموير', key, 'info');
-      setChip(routeChip, 'المضيف', route.label, 'ok');
-    }
+    setChip(fwChip, 'الفيرموير', key + ' — غير مدعوم', 'bad');
   }
 
-  if (!pendingTarget) return;
+  /* Focus the suggested row so the PS4 cursor is already on it (a plain
+     focus() only, no navigation). Without a PS4 agent it stays for desktop. */
+  try { (hit || rows[0]).focus(); } catch (e) {}
 
-  if (!autoRun.checked) {
-    hideProgress();
-    setState('جاهز — اضغط للتشغيل', 'ok');
-    setSub('التشغيل التلقائي معطّل — اضغط X أو OK للمتابعة');
-    armCta('اضغط X أو OK لبدء التشغيل');
-    return;
+  /* ---------------------------------------------- menu cache status */
+  /* Never blocking, like the reference: a failed menu cache only changes
+     a line of text — the menu itself works online or off. */
+  var cache = window.applicationCache;
+  if (!cache) {
+    setChip(cacheChip, 'كاش القائمة', 'غير مدعوم', 'info');
+  } else {
+    function ready() { setChip(cacheChip, 'كاش القائمة', 'جاهز', 'ok'); }
+    cache.addEventListener('checking',    function () { setChip(cacheChip, 'كاش القائمة', 'فحص', 'info'); }, false);
+    cache.addEventListener('downloading', function () { setChip(cacheChip, 'كاش القائمة', 'تحميل', 'warn'); }, false);
+    cache.addEventListener('cached',      ready, false);
+    cache.addEventListener('noupdate',    ready, false);
+    cache.addEventListener('updateready', function () {
+      try { cache.swapCache(); } catch (e) {}
+      ready();
+    }, false);
+    cache.addEventListener('error', function () {
+      if (cache.status === 1 || cache.status === 4) ready();
+      else setChip(cacheChip, 'كاش القائمة', 'فشل — يعمل عبر الشبكة', 'warn');
+    }, false);
+    cache.addEventListener('obsolete', function () {
+      setChip(cacheChip, 'كاش القائمة', 'قديم — أعد التثبيت', 'warn');
+    }, false);
+    if (cache.status === 1) ready();
   }
-
-  setState('جاري فتح مضيف ' + pendingLabel + '...', 'warn');
-  setSub('لا تغلق المتصفح — جاري التحويل');
-  showProgress();
-
-  /* Safety net: if the navigation is swallowed by the console browser, the
-     user gets a button instead of a frozen screen. */
-  setTimeout(function () {
-    if (going) return;
-    hideProgress();
-    setState('تعذر التحويل التلقائي', 'warn');
-    setSub('اضغط X أو OK لفتح المضيف يدويا');
-    armCta('اضغط X أو OK لفتح المضيف');
-  }, 6000);
-
-  /* Beat so the status line is actually painted before we navigate away. */
-  setTimeout(function () { go(pendingTarget); }, 400);
 })();
 </script>
 </body>

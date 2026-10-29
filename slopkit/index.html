@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>alnafar | GoldHEN 11.50 – 13.52</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+(function () {
+  'use strict';
+  /* psx8 split-host pattern: THIS page carries no manifest. It is served
+     from the host's cache this directory installed (status IDLE when the
+     document comes from it); with no cache yet the status is UNCACHED and
+     the browser is sent to cache.html — which installs and then ALWAYS
+     opens this page again. No router, no bounce-back. */
+  var m = /PlayStation\s*4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent || '');
+  var fwnum = m ? parseInt(m[1], 10) * 100 + parseInt(m[2], 10) : 0;
+  /* Gaps inside the cache range (12.03 – 12.49, 13.01) have a cache page
+     but no chain — never send an unrunnable firmware at the installer. */
+  var chainable = (fwnum >= 1150 && fwnum <= 1202) ||
+                  (fwnum >= 1250 && fwnum <= 1300) ||
+                  (fwnum >= 1302 && fwnum <= 1352);
+  var supported = fwnum >= 1150 && fwnum <= 1352;
+  /* ?skipcache=1 — the cache page's "continue without cache" escape. The
+     two pages would bounce each other forever on a failed first install
+     without it: index sees UNCACHED and goes back to the install page. */
+  var skipRe = /[?&]skipcache=1(\D|$)/;
+  var skip = skipRe.test(location.search);
+  var ac = window.applicationCache;
+  if (!skip && chainable && ac && ac.status === 0) {
+    window.location.replace('cache.html');
+  }
+})();
+</script>
+</head>
+<body>
+
+<div id="brand">
+  <h1><span>al</span>nafar</h1>
+  <small>PS4 Exploit Host — GoldHEN v2.4b18.12 · FW 11.50 – 13.52</small>
+</div>
+
+<div id="main">
+  <h1 id="msgs" role="status" aria-live="polite">جاري فحص الفيرموير...</h1>
+  <div id="submsgs" role="status" aria-live="polite">لا تغلق المتصفح</div>
+
+  <div class="chip-row">
+    <span class="chip info" id="fwChip">الفيرموير: <b>--</b></span>
+    <span class="chip" id="cacheChip">الكاش: <b>فحص</b></span>
+  </div>
+
+  <div class="progress-num" id="progNum">0%</div>
+  <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
+
+  <div class="unsupported" id="unsupported" style="display:none">
+    <h2>الفيرموير غير مدعوم في هذا المضيف</h2>
+    <p>هذا المضيف يدعم 11.50 حتى 13.52 فقط.<br>اختر مضيف جهازك من القائمة الرئيسية.</p>
+    <p><a class="cta on" href="../index.html">رجوع إلى القائمة</a></p>
+  </div>
+</div>
+
+<div id="footer">
+  <div class="store-name">الشاردة للإلكترونيات</div>
+  <div class="store-addr">شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا</div>
+  <div class="store-phone">0920595447</div>
+  <div class="store-meta">GoldHEN v2.4b18.12 &middot; 11.50 – 13.52 &middot; <a href="../index.html">القائمة</a></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* -------------------------------------------------- dom + constants */
+  var msgsEl   = document.getElementById('msgs');
+  var subEl    = document.getElementById('submsgs');
+  var fwChip   = document.getElementById('fwChip');
+  var cacheChip= document.getElementById('cacheChip');
+  var progNumEl= document.getElementById('progNum');
+  var progWrap = document.getElementById('progWrap');
+  var progFill = document.getElementById('progFill');
+  var unsupEl  = document.getElementById('unsupported');
+
+  /* ApplicationCache status constants (HTML spec). Spelled out because the
+     PS4 WebKit build does not always expose every static member. */
+  var UNCACHED = 0, IDLE = 1, CHECKING = 2, DOWNLOADING = 3, UPDATEREADY = 4, OBSOLETE = 5;
+
+  function setState(text, cls) {
+    msgsEl.innerHTML = text;
+    msgsEl.className = cls || '';
+    msgsEl.setAttribute('role', cls === 'bad' ? 'alert' : 'status');
+  }
+  function setSub(text) { subEl.innerHTML = text; }
+  function setChip(el, label, value, cls) {
+    el.innerHTML = label + ': <b>' + value + '</b>';
+    el.className = 'chip' + (cls ? ' ' + cls : '');
+  }
+
+  /* ------------------------------------------------------- firmware */
+  var m = /PlayStation\s*4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent || '');
+  var fwText = 'غير PS4', fwnum = 0;
+  if (!m) fwText = 'غير PS4';
+  else {
+    var minor = parseInt(m[2], 10);
+    fwText = m[1] + '.' + (minor < 10 ? '0' + minor : '' + minor);
+    fwnum = parseInt(m[1], 10) * 100 + minor;
+  }
+  var supported = fwnum >= 1150 && fwnum <= 1352;
+
+  setChip(fwChip, 'الفيرموير', fwText, supported ? 'ok' : 'bad');
+
+  if (!supported) {
+    unsupEl.style.display = 'block';
+    progWrap.style.display = 'none';
+    setState('الفيرموير ' + fwText + ' غير مدعوم في هذا المضيف', 'bad');
+    setSub('المضيف يدعم 11.50 حتى 13.52 فقط — افتح القائمة الرئيسية واختر مضيف جهازك');
+    setChip(cacheChip, 'الكاش', 'متوقف', 'bad');
+    return;
+  }
+
+  /* ------------------------------------------------------- exploit */
+  /* SLOP family: the chain differs per firmware. All three entries are
+     module scripts that self-run on import (IIFE). ?bug=lapse / ?bug=poops
+     force a chain for testing, kept from the old host. */
+  function run() {
+    if (run._done) return;
+    run._done = true;
+
+    var src;
+    var forced = null;
+    var bugRe = /[?&]bug=([^&]+)/.exec(location.search);
+    if (bugRe) {
+      try { forced = decodeURIComponent(bugRe[1].replace(/\+/g, ' ')); }
+      catch (e) { forced = bugRe[1]; }
+    }
+    if (forced === 'lapse' || forced === 'poops') {
+      src = forced === 'lapse' ? 'chain_lapse.js' : 'chain_poops.js';
+    } else if (fwnum >= 1150 && fwnum <= 1202) {
+      src = 'chain_lapse.js';
+    } else if (fwnum >= 1250 && fwnum <= 1300) {
+      src = 'chain_poops.js';
+    } else if (fwnum >= 1302 && fwnum <= 1352) {
+      src = 'jb.js';
+    } else {
+      /* Inside the host's cache range but outside every chain, e.g. 12.03
+         or 13.01. */
+      unsupEl.style.display = 'block';
+      setState('الفيرموير ' + fwText + ' ليس له سلسلة استغلال', 'bad');
+      setSub('(12.03 – 12.49 و 13.01 غير مدعومة) — اختر مضيف جهازك من القائمة');
+      setChip(cacheChip, 'الكاش', 'متوقف', 'bad');
+      return;
+    }
+
+    setState('جاري تشغيل GoldHEN v2.4b18.12...', 'warn');
+    setSub('لا تغلق المتصفح — جاري التحميل');
+    setProgress(100);
+    var s = document.createElement('script');
+    s.type = 'module';
+    s.onerror = onScriptError;
+    s.src = src;
+    document.head.appendChild(s);
+  }
+
+  function onScriptError() {
+    if (run._failed) return;
+    run._failed = true;
+    setChip(cacheChip, 'الكاش', 'ناقص', 'bad');
+    setState('الملفات غير موجودة', 'bad');
+    setSub('امسح بيانات المتصفح من إعدادات النظام ثم أعد تثبيت الكاش من جديد');
+    offerRun('اضغط X أو OK لإعادة المحاولة', function () { location.reload(); });
+  }
+
+  function setProgress(p) {
+    if (p < 0) p = 0; if (p > 100) p = 100;
+    progWrap.style.display = 'block';
+    progNumEl.className = 'progress-num on';
+    progFill.style.width = p + '%';
+    progNumEl.innerHTML = p + '%';
+  }
+
+  function offerRun(text, handler) {
+    if (offerRun._armed) return;
+    offerRun._armed = true;
+    var cta = document.createElement('div');
+    cta.className = 'cta on';
+    cta.setAttribute('role', 'button');
+    cta.setAttribute('tabindex', '0');
+    cta.innerHTML = text;
+    unsupEl.parentNode.insertBefore(cta, unsupEl);
+    function fire() {
+      document.removeEventListener('click', fire);
+      document.removeEventListener('keydown', fire);
+      handler();
+    }
+    document.addEventListener('click', fire);
+    document.addEventListener('keydown', fire);
+  }
+
+  /* ------------------------------------------------- cache listeners */
+  /* Every listener is attached BEFORE the status is inspected, and guarded
+     by run._done so a background update finishing late cannot overwrite a
+     screen the exploit already owns. */
+  function attachCacheListeners(ac) {
+    ac.addEventListener('progress', function (e) {
+      if (run._done || !e || !e.total) return;
+      setProgress(Math.round((e.loaded / e.total) * 100));
+      setChip(cacheChip, 'الكاش', 'تحديث في الخلفية', 'info');
+    }, false);
+
+    ac.addEventListener('cached', function () {
+      if (run._done) return;
+      setChip(cacheChip, 'الكاش', 'جاهز', 'ok');
+      setSub('الكاش جاهز — جاري التشغيل');
+      run();
+    }, false);
+
+    ac.addEventListener('updateready', function () {
+      if (run._done) return;
+      try { if (ac.status === UPDATEREADY) ac.swapCache(); } catch (e) {}
+      setChip(cacheChip, 'الكاش', 'تحديث', 'ok');
+      setSub('تم تحديث الكاش — جاري التشغيل');
+      run();
+    }, false);
+
+    ac.addEventListener('noupdate', function () {
+      if (run._done) return;
+      setChip(cacheChip, 'الكاش', 'جاهز', 'ok');
+      setSub('الكاش جاهز — جاري التشغيل');
+      run();
+    }, false);
+
+    ac.addEventListener('error', function () {
+      if (run._done) return;
+      if (ac.status === UNCACHED || ac.status === OBSOLETE) {
+        /* First install failed: never bounce back to cache.html — that was
+           the ping-pong. Escape with ?skipcache=1 and run from network. */
+        setChip(cacheChip, 'الكاش', 'تعذر', 'bad');
+        setState('تعذر التحقق من الكاش', 'warn');
+        setSub('اضغط X أو OK للمتابعة مباشرة بدون انتظار');
+        offerRun('اضغط X أو OK للمتابعة مباشرة', function () {
+          window.location.replace('index.html?skipcache=1');
+        });
+      }
+      /* Any other failure: the installed cache answers requests; keep run(). */
+    }, false);
+
+    ac.addEventListener('obsolete', function () {
+      if (run._done) return;
+      setChip(cacheChip, 'الكاش', 'قديم', 'warn');
+      setState('الكاش قديم — امسح بيانات المتصفح', 'warn');
+      setSub('إعدادات النظام > امسح بيانات المتصفح ثم إعادة المحاولة');
+      offerRun('اضغط X أو OK للمتابعة مباشرة', function () {
+        window.location.replace('index.html?skipcache=1');
+      });
+    }, false);
+  }
+
+  /* ------------------------------------------------------- boot */
+  var ac = window.applicationCache;
+  var skip = /[?&]skipcache=1(\D|$)/.test(location.search);
+
+  if (!ac) {
+    setChip(cacheChip, 'الكاش', 'غير مدعوم', 'info');
+    setSub('المتصفح لا يدعم الكاش — التشغيل من الشبكة');
+    run();
+  } else {
+    attachCacheListeners(ac);
+    if (skip) {
+      setChip(cacheChip, 'الكاش', 'تجاوز التثبيت', 'warn');
+      setState('تشغيل بدون كاش من الشبكة', 'warn');
+      setSub('تم تجاوز الكاش بناءً على اختيارك');
+      run();
+    } else if (ac.status === UNCACHED) {
+      /* Head gate handles this; if we got here the gate skipped (pass? keep safe) */
+      window.location.replace('cache.html');
+    } else if (ac.status === IDLE) {
+      setChip(cacheChip, 'الكاش', 'جاهز', 'ok');
+      setSub('الكاش جاهز — جاري التشغيل');
+      run();
+    } else if (ac.status === UPDATEREADY) {
+      try { ac.swapCache(); } catch (e) {}
+      setChip(cacheChip, 'الكاش', 'تحديث', 'ok');
+      setSub('تم تحديث الكاش — جاري التشغيل');
+      run();
+    } else {
+      /* CHECKING / DOWNLOADING / OBSOLETE: an update check is running in the
+         background and never gates the exploit — exactly like the reference. */
+      setChip(cacheChip, 'الكاش', ac.status === OBSOLETE ? 'قديم' : 'تحديث في الخلفية', ac.status === OBSOLETE ? 'warn' : 'info');
+      setSub('جارٍ تحديث الكاش في الخلفية — لا يؤثر على التشغيل');
+      run();
+    }
+  }
+})();
+</script>
+</body>
+</html>

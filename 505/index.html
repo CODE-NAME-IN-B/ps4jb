@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" manifest="cache.manifest">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>alnafar | GoldHEN 5.05 – 5.07</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div id="brand">
+  <h1><span>al</span>nafar</h1>
+  <small>PS4 Exploit Host — GoldHEN v2.4b18.12 · FW 5.05 – 5.07</small>
+</div>
+
+<div id="main">
+  <h1 id="msgs" role="status" aria-live="polite">جاري فحص الكاش...</h1>
+  <div id="submsgs" role="status" aria-live="polite">لا تغلق المتصفح</div>
+
+  <div class="chip-row">
+    <span class="chip info" id="fwChip">الفيرموير: <b>--</b></span>
+    <span class="chip" id="cacheChip">الكاش: <b>فحص</b></span>
+  </div>
+
+  <div class="progress-num" id="progNum">0%</div>
+  <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
+</div>
+
+<div id="footer">
+  <div class="store-name">الشاردة للإلكترونيات</div>
+  <div class="store-addr">شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا</div>
+  <div class="store-phone">0920595447</div>
+  <div class="store-meta">GoldHEN v2.4b18.12 &middot; 5.05 – 5.07 &middot; <a href="../index.html">القائمة</a></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Single-page host, psx8-505 style: the manifest sits on this page, so
+     the very first online visit starts the install AND the same visit
+     continues as soon as the cache is ready (or times out into a manual
+     run). One sessionStorage key guarantees the updateready reload happens
+     exactly once — never an infinite loop. */
+
+  var msgsEl   = document.getElementById('msgs');
+  var subEl    = document.getElementById('submsgs');
+  var fwChip   = document.getElementById('fwChip');
+  var cacheChip= document.getElementById('cacheChip');
+  var progNumEl= document.getElementById('progNum');
+  var progWrap = document.getElementById('progWrap');
+  var progFill = document.getElementById('progFill');
+
+  var UNCACHED = 0, IDLE = 1, CHECKING = 2, DOWNLOADING = 3, UPDATEREADY = 4, OBSOLETE = 5;
+
+  var RELOAD_KEY = 'alnafar505Reload';
+  var started = false;
+  var watchdog = null;
+
+  function setState(text, cls) {
+    msgsEl.innerHTML = text;
+    msgsEl.className = cls || '';
+    msgsEl.setAttribute('role', cls === 'bad' ? 'alert' : 'status');
+  }
+  function setSub(text) { subEl.innerHTML = text; }
+  function setChip(el, label, value, cls) {
+    el.innerHTML = label + ': <b>' + value + '</b>';
+    el.className = 'chip' + (cls ? ' ' + cls : '');
+  }
+  function setProgress(p) {
+    if (p < 0) p = 0; if (p > 100) p = 100;
+    progWrap.style.display = 'block';
+    progNumEl.className = 'progress-num on';
+    progFill.style.width = p + '%';
+    progNumEl.innerHTML = p + '%';
+  }
+  function storageSet(name, value)  { try { localStorage.setItem(name, value); } catch (e) {} }
+  function storageRemove(name)      { try { localStorage.removeItem(name); } catch (e) {} }
+  function sessionGet(name)         { try { return sessionStorage.getItem(name); } catch (e) { return null; } }
+  function sessionSet(name, value)  { try { sessionStorage.setItem(name, value); } catch (e) {}  }
+  function sessionRemove(name)      { try { sessionStorage.removeItem(name); } catch (e) {} }
+
+  /* ------------------------------------------------------- firmware */
+  var m = /PlayStation\s*4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent || '');
+  var fwText = 'غير PS4', fwnum = 0;
+  if (m) {
+    var minor = parseInt(m[2], 10);
+    fwText = m[1] + '.' + (minor < 10 ? '0' + minor : '' + minor);
+    fwnum = parseInt(m[1], 10) * 100 + minor;
+  }
+  var supported = fwnum >= 505 && fwnum <= 507;
+  setChip(fwChip, 'الفيرموير', fwText, supported ? 'ok' : 'bad');
+
+  if (!supported) {
+    setState('الفيرموير ' + fwText + ' غير مدعوم — هذا المضيف يدعم 5.05 حتى 5.07', 'bad');
+    setSub('اختر مضيف جهازك من القائمة الرئيسية');
+    setChip(cacheChip, 'الكاش', 'متوقف', 'bad');
+    return;
+  }
+
+  /* ------------------------------------------------------- exploit */
+  function run() {
+    if (started) return;
+    started = true;
+    if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    setState('جاري تشغيل GoldHEN v2.4b18.12...', 'warn');
+    setSub('لا تغلق المتصفح — جاري التحميل');
+    setProgress(100);
+    var s = document.createElement('script');
+    s.onerror = onScriptError;
+    s.src = 'exploit.js';
+    document.head.appendChild(s);
+  }
+
+  function onScriptError() {
+    if (run._failed) return;
+    run._failed = true;
+    setChip(cacheChip, 'الكاش', 'ناقص', 'bad');
+    setState('الملفات غير موجودة', 'bad');
+    setSub('امسح بيانات المتصفح من إعدادات النظام ثم أعد تثبيت الكاش من جديد');
+    offerManual('اضغط X أو OK لإعادة المحاولة', function () { location.reload(); });
+  }
+
+  function offerManual(text, handler) {
+    if (offerManual._armed) return;
+    offerManual._armed = true;
+    var cta = document.createElement('div');
+    cta.className = 'cta on';
+    cta.setAttribute('role', 'button');
+    cta.setAttribute('tabindex', '0');
+    cta.innerHTML = text;
+    subEl.parentNode.insertBefore(cta, subEl);
+    function fire() {
+      document.removeEventListener('click', fire);
+      document.removeEventListener('keydown', fire);
+      handler();
+    }
+    document.addEventListener('click', fire);
+    document.addEventListener('keydown', fire);
+  }
+
+  /* ---------------------------------------------------- cache logic */
+  var ac = window.applicationCache;
+
+  function finish() {
+    if (finished) return false;
+    finished = true;
+    if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    return true;
+  }
+  var finished = false;
+
+  function ready(message) {
+    if (!finish()) return;
+    storageSet('cached505', 'yes');
+    sessionRemove(RELOAD_KEY);
+    setChip(cacheChip, 'الكاش', 'جاهز', 'ok');
+    if (message) setState(message, 'ok');
+    setTimeout(run, 500);
+  }
+
+  function updateReady() {
+    if (!finish()) return;
+    storageSet('cached505', 'yes');
+    try { ac.swapCache(); } catch (e) {}
+    setChip(cacheChip, 'الكاش', 'تحديث', 'ok');
+    /* One reload only, tracked in sessionStorage — the freshly swapped
+       cache is not valid for this document's group on 5.05-era WebKit. */
+    if (sessionGet(RELOAD_KEY) !== 'yes') {
+      sessionSet(RELOAD_KEY, 'yes');
+      setState('تم تحديث الكاش — جاري إعادة التحميل...', 'warn');
+      setTimeout(function () { window.location.reload(); }, 750);
+    } else {
+      setState('تم تحديث الكاش — جاري التشغيل', 'ok');
+      setTimeout(run, 500);
+    }
+  }
+
+  function cacheError() {
+    if (!finish()) return;
+    storageRemove('cached505');
+    setChip(cacheChip, 'الكاش', 'فشل', 'bad');
+    setState('تعذر تثبيت الكاش — التحقق من الاتصال ثم أعد المحاولة', 'bad');
+    setSub('اضغط X أو OK للمتابعة مباشرة بدون كاش');
+    offerManual('اضغط X أو OK للمتابعة بدون كاش', run);
+  }
+
+  if (!ac || !document.documentElement.hasAttribute('manifest')) {
+    setChip(cacheChip, 'الكاش', 'غير مدعوم', 'info');
+    setSub('المتصفح لا يدعم الكاش — التشغيل من الشبكة');
+    setTimeout(run, 250);
+  } else {
+    ac.addEventListener('downloading', function () {
+      setChip(cacheChip, 'الكاش', 'تثبيت', 'warn');
+      setState('جاري تثبيت الكاش...', 'warn');
+      setSub('لا تغلق المتصفح — انتظر حتى يكتمل التحميل');
+    }, false);
+    ac.addEventListener('progress', function (event) {
+      if (event && event.total > 0) {
+        var p = Math.round(100 * event.loaded / event.total);
+        setProgress(p);
+        setChip(cacheChip, 'الكاش', p + '%', 'warn');
+      }
+      setSub('لا تغلق المتصفح — انتظر حتى يكتمل التحميل');
+    }, false);
+    ac.addEventListener('cached', function () { ready('تم تثبيت الكاش — جاري التشغيل'); }, false);
+    ac.addEventListener('noupdate', function () { ready('الكاش جاهز — جاري التشغيل'); }, false);
+    ac.addEventListener('updateready', updateReady, false);
+    ac.addEventListener('error', cacheError, false);
+    ac.addEventListener('obsolete', function () {
+      if (!finish()) return;
+      storageRemove('cached505');
+      cacheError();
+    }, false);
+
+    /* Liveness first, then inspect the status — the install can finish in
+       between. IDLE means the cache already exists: run now. */
+    if (ac.status === UPDATEREADY) {
+      updateReady();
+    } else if (ac.status === IDLE) {
+      ready('الكاش جاهز — جاري التشغيل');
+    } else {
+      setState('جاري فحص الكاش...', 'warn');
+      watchdog = setTimeout(function () {
+        if (!finish()) return;
+        setState('تعذر فحص الكاش — يمكنك المتابعة يدوياً', 'warn');
+        setSub('اضغط X أو OK للمتابعة مباشرة بدون انتظار');
+        offerManual('اضغط X أو OK للمتابعة', run);
+      }, 60000);
+    }
+  }
+})();
+</script>
+</body>
+</html>

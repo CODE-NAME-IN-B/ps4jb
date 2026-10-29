@@ -503,6 +503,131 @@ body::before {
   .checkbox-wrap label { font-size: 0.98rem; padding: 0.55rem 1.1rem; }
 }
 
+/* ==========================================================================
+   Firmware menu — psx8-style route table, RTL, same constraints as above
+   ========================================================================== */
+.menu {
+  width: 100%;
+  max-width: 34rem;
+  margin: 0.7rem auto 0;
+  padding: 0.6rem;
+  border: 1px solid rgba(124,58,237,0.35);
+  border-radius: 12px;
+  background: rgba(15,15,35,0.88);
+  text-align: right;
+  direction: rtl;
+}
+.menu-head {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: baseline;
+  align-items: baseline;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(124,58,237,0.25);
+  padding: 0.2rem 0.35rem 0.55rem;
+  margin-bottom: 0.35rem;
+}
+.menu-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #A78BFA;
+  letter-spacing: 0.05em;
+}
+.menu-hint {
+  font-size: 0.65rem;
+  color: #64748B;
+}
+.menu-foot {
+  border-top: 1px solid rgba(124,58,237,0.25);
+  padding: 0.55rem 0.35rem 0.15rem;
+  font-size: 0.68rem;
+  color: #94A3B8;
+  line-height: 1.6;
+}
+.row {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  text-decoration: none;
+  padding: 0.55rem 0.7rem;
+  margin: 0.35rem 0;
+  border: 1px solid rgba(124,58,237,0.22);
+  border-radius: 10px;
+  background: rgba(15,15,35,0.7);
+  color: #E2E8F0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  -webkit-transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.row:hover, .row:focus {
+  background: rgba(124,58,237,0.16);
+  border-color: #7C3AED;
+  outline: 0;
+}
+.row:focus { outline: 3px solid #F43F5E; outline-offset: 2px; }
+.row .num {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  color: #64748B;
+  letter-spacing: 0.08em;
+  margin-left: 0.7rem;
+}
+.row .txt {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.row .name {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #E2E8F0;
+}
+.row .meta {
+  display: block;
+  font-size: 0.72rem;
+  color: #94A3B8;
+  margin-top: 0.18rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.row .go {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  color: #A78BFA;
+  margin-right: 0.7rem;
+  white-space: nowrap;
+}
+.row.hit { border-color: rgba(52,211,153,0.6); background: rgba(52,211,153,0.10); }
+.row.hit .name { color: #34D399; text-shadow: 0 0 8px rgba(52,211,153,0.45); }
+.row.hit .go { color: #34D399; }
+.hit-badge {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #34D399;
+  margin-top: 0.15rem;
+}
+@media (min-height: 1000px), (min-width: 1900px) {
+  .menu { max-width: 44rem; padding: 0.85rem; }
+  .menu-title { font-size: 1rem; }
+  .menu-hint, .row .go { font-size: 0.82rem; }
+  .row .name { font-size: 1.2rem; }
+  .row .meta { font-size: 0.85rem; }
+  .menu-foot { font-size: 0.8rem; }
+}
+@media (max-width: 340px) {
+  .row .num { display: none; }
+  .row .name { font-size: 0.92rem; }
+  .row .meta { font-size: 0.64rem; }
+}
+
 a { color: #C4B5FD; cursor: pointer; }
 a:hover { color: #F43F5E; }
 

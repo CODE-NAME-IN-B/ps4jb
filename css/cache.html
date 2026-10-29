@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" manifest="cache.manifest">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>alnafar | تثبيت الكاش 10.00 – 11.02</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+/* Put index.html in the address bar before anything else: when the user
+   closes and reopens the browser the restored URL IS the host, not this
+   install page — that is what keeps the console from reopening onto the
+   installer forever. Unlike some reference hosts we do NOT call
+   history.go(-history.length): it clamps to entry 0 and tears the page out
+   from under an in-flight AppCache install. */
+try { history.replaceState(null, null, 'index.html'); } catch (e) {}
+</script>
+</head>
+<body>
+
+<div id="brand">
+  <h1><span>al</span>nafar</h1>
+  <small>PS4 Exploit Host — تثبيت الكاش 10.00 – 11.02</small>
+</div>
+
+<div id="main">
+  <h1 id="msgs" role="status" aria-live="polite">جاري فحص الكاش...</h1>
+  <div id="submsgs" role="status" aria-live="polite">لا تغلق المتصفح</div>
+
+  <div class="chip-row">
+    <span class="chip info">الفيرموير <b>10.00 – 11.02</b></span>
+    <span class="chip" id="cacheChip">الكاش: <b>فحص</b></span>
+  </div>
+
+  <div class="progress-num on" id="progNum">0%</div>
+  <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
+
+  <div class="steps" id="steps">
+    <h2>خطوات التشغيل على PS4</h2>
+    <ol>
+      <li id="st1">اترك هذه الصفحة حتى يكتمل التحميل 100%</li>
+      <li id="st2">أغلق المتصفح بالكامل (OPTIONS ثم Exit)</li>
+      <li id="st3">افتح المتصفح ودخل نفس الرابط — GoldHEN سيبدأ تلقائياً</li>
+    </ol>
+  </div>
+</div>
+
+<div id="footer">
+  <div class="store-name">الشاردة للإلكترونيات</div>
+  <div class="store-addr">شارع القضائية مقابل مطحنة الفضيل — جوار معهد البيان — أجدابيا</div>
+  <div class="store-phone">0920595447</div>
+  <div class="store-meta">GoldHEN v2.4b18.12 &middot; 10.00 – 11.02 &middot; <a href="../index.html">القائمة</a></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* psx8 install-page flow, in alnafar clothing. Key differences from the
+     old alnafar install pages, and why:
+     · The page ALWAYS continues on its own (openHost) once the cache is
+       cached / noupdate / updateready — or when opened with the cache
+       already installed (IDLE). It never waits for a manual tap, so nobody
+       can end up parked on the installer forever.
+     · installed flag follows the reference: true on completion, false on
+       error, so localStorage tells the truth about the cache.
+     · No self-reload retry loop: a retry that reloads against a manifest
+       that will 404 again is the previous design's dead screen. */
+
+  var msgsEl   = document.getElementById('msgs');
+  var chipEl   = document.getElementById('cacheChip');
+  var progNumEl= document.getElementById('progNum');
+  var progFill = document.getElementById('progFill');
+  var stepsEl  = document.getElementById('steps');
+  var st1      = document.getElementById('st1');
+  var st2      = document.getElementById('st2');
+  var st3      = document.getElementById('st3');
+
+  /* ApplicationCache status constants (HTML spec), spelled out because the
+     PS4 WebKit build does not always expose every static member. */
+  var UNCACHED = 0, IDLE = 1, CHECKING = 2, DOWNLOADING = 3, UPDATEREADY = 4, OBSOLETE = 5;
+
+  var going = false;   /* navigation already issued */
+  var done  = false;   /* a real completion happened */
+
+  function setChip(text, cls) {
+    chipEl.innerHTML = 'الكاش: <b>' + text + '</b>';
+    chipEl.className = 'chip' + (cls ? ' ' + cls : '');
+  }
+  function setState(text, cls) {
+    msgsEl.innerHTML = text;
+    msgsEl.className = cls || '';
+    msgsEl.setAttribute('role', cls === 'bad' ? 'alert' : 'status');
+  }
+  function setSub(text) {
+    document.getElementById('submsgs').innerHTML = text;
+  }
+  function setProgress(p) {
+    if (p < 0) p = 0; if (p > 100) p = 100;
+    progFill.style.width = p + '%';
+    progNumEl.innerHTML = p + '%';
+  }
+
+  function markInstalled() {
+    try { localStorage.cachedcss = 'yes'; } catch (e) {}
+  }
+
+  /* Always continues on its own: exact match for the psx8 openHost. */
+  function openHost(message) {
+    if (going) return;
+    going = true;
+    markInstalled();
+    setProgress(100);
+    setChip('جاهز', 'ok');
+    if (message) {
+      setState(message, 'ok');
+      setSub('جاري فتح المضيف...');
+    }
+    showSteps(3);
+    setTimeout(function () {
+      try { window.location.replace('index.html'); }
+      catch (e) { window.location.href = 'index.html'; }
+    }, 1200);
+  }
+
+  function showSteps(n) {
+    stepsEl.className = 'steps on';
+    if (n >= 1) st1.className = 'done';
+    if (n >= 2) st2.className = n === 2 ? 'now' : 'done';
+    if (n >= 3) st3.className = n === 3 ? 'now' : 'done';
+  }
+
+  function onProgress(e) {
+    if (done || going || !e) return;
+    if (e.lengthComputable && e.total > 0) {
+      setProgress(Math.round(100 * e.loaded / e.total));
+      setChip('تحميل ' + Math.round(100 * e.loaded / e.total) + '%', 'warn');
+    } else {
+      setChip('جاري التثبيت', 'warn');
+    }
+    setSub('لا تغلق المتصفح — انتظر حتى يكتمل التحميل 100%');
+    showSteps(1);
+  }
+
+  function onWaiting() {
+    if (done || going) return;
+    setChip('جاري التثبيت', 'warn');
+    setSub('لا تغلق المتصفح — انتظر حتى يكتمل التحميل 100%');
+    showSteps(1);
+  }
+
+  function onReady() {
+    if (done || going) return;
+    done = true;
+    openHost('اكتمل الكاش — جاري فتح المضيف');
+  }
+
+  function onFail() {
+    if (done || going) return;
+    try { localStorage.cachedcss = 'no'; } catch (e) {}
+    setChip('فشل', 'bad');
+    setState('تعذر تثبيت الكاش', 'bad');
+    setSub('تحقق من الاتصال وأعد تحميل الصفحة — أو تابع بدون كاش');
+    offerSkip();
+  }
+
+  function offerSkip() {
+    if (going) return;
+    var cta = document.createElement('div');
+    cta.className = 'cta on';
+    cta.setAttribute('role', 'button');
+    cta.setAttribute('tabindex', '0');
+    cta.innerHTML = 'اضغط X أو OK للمتابعة بدون كاش';
+    stepsEl.parentNode.insertBefore(cta, stepsEl);
+    function fire() {
+      document.removeEventListener('click', fire);
+      document.removeEventListener('keydown', fire);
+      if (going) return;
+      going = true;
+      window.location.replace('index.html?skipcache=1');
+    }
+    document.addEventListener('click', fire);
+    document.addEventListener('keydown', fire);
+  }
+
+  var ac = window.applicationCache;
+  if (!ac) {
+    setChip('غير مدعوم', 'warn');
+    setState('المتصفح لا يدعم الكاش — التعبئة غير متاحة', 'warn');
+    setSub('اضغط X أو OK للمتابعة مباشرة من الشبكة');
+    offerSkip();
+  } else {
+    ac.addEventListener('progress', onProgress, false);
+    ac.addEventListener('downloading', onWaiting, false);
+    ac.addEventListener('checking', onWaiting, false);
+    ac.addEventListener('cached', onReady, false);
+    ac.addEventListener('noupdate', onReady, false);
+    ac.addEventListener('updateready', function () {
+      try { if (ac.status === UPDATEREADY) ac.swapCache(); } catch (e) {}
+      onReady();
+    }, false);
+    ac.addEventListener('error', onFail, false);
+    ac.addEventListener('obsolete', function () {
+      try { localStorage.cachedcss = 'no'; } catch (e) {}
+      onFail();
+    }, false);
+
+    /* Liveness first, then inspect the status — same order psx8 uses: the
+       install can finish between attaching the handlers and the check. */
+    if (ac.status === IDLE) {
+      /* Already installed (user reopened this URL): hand over at once.
+         This is what kills the "stuck on the cache page" report. */
+      done = true;
+      openHost('الكاش جاهز — جاري فتح المضيف');
+    } else if (ac.status === UPDATEREADY) {
+      try { ac.swapCache(); } catch (e) {}
+      done = true;
+      openHost('تم تحديث الكاش — جاري فتح المضيف');
+    } else if (ac.status === CHECKING || ac.status === DOWNLOADING) {
+      onWaiting();
+      showSteps(1);
+    } else {
+      /* UNCACHED or OBSOLETE: downloading starts automatically for this
+         document; if the console stays silent the error/obsolete handler
+         covers it. */
+      onWaiting();
+      showSteps(1);
+    }
+  }
+})();
+</script>
+</body>
+</html>
