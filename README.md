@@ -7,6 +7,9 @@
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue)](https://code-name-in-b.github.io/ps4jb/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+**Live host — open this address in the PS4 browser:**
+### https://code-name-in-b.github.io/ps4jb/
+
 </div>
 
 ---
