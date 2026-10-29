@@ -6,9 +6,7 @@ CACHE MANIFEST
 CACHE:
 ./
 index.html
-background.jpg
 style.css
-favicon.ico
 
 NETWORK:
 *

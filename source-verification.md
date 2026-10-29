@@ -5,10 +5,12 @@
 - The ConsoleMods PS4 Exploit Chart was reviewed at https://consolemods.org/wiki/PS4:Exploit_Chart. It documents public support by firmware range and does not list a public exploit entry for firmware 13.00; it also distinguishes theoretical Poopsploit support from released, recommended paths.
 - Therefore, the missing webkit/*.js, kexploit/*.js, common/*.js, and payload .bin files cannot be safely populated from the attachment alone. No exploit source or binary was downloaded or executed.
 
-## Downloaded source archives
+## Upstream sources (inspected, not shipped)
 
-- `vendor/psfree-lapse-v1.5.1.zip` from https://github.com/Al-Azif/psfree-lapse, verified as a readable ZIP archive.
-- `vendor/ps4jb.zip` from https://github.com/sleirsgoevy/ps4jb, verified as a readable ZIP archive.
-- `vendor/vue-after-free-lite.zip` from https://github.com/owendswang/vue-after-free-lite, verified as a readable ZIP archive.
+The local `vendor/` verification archives were removed from the repository to keep the deployment clean — nothing at runtime referenced them. Sources were inspected from upstream before the payloads were localized:
 
-The archives were downloaded for source inspection only. They were not executed and were not renamed into the numbered exploit slots because their entrypoints, firmware assumptions, and loading contracts do not directly match the custom `index.html` loader.
+- https://github.com/Al-Azif/psfree-lapse (v1.5.1) — PSFree + Lapse, functional support tested for PS4 7.00 – 9.60.
+- https://github.com/sleirsgoevy/ps4jb — PS4 6.72/7.02 jailbreak reference.
+- https://github.com/owendswang/vue-after-free-lite — Vue After Free reference.
+
+The archives were downloaded for source inspection only. They were never executed as shipped, and the payloads in the host directories are the localized, path-corrected versions built from them.

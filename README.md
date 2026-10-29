@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![alnafar](background.jpg)
-
 **PS4 Jailbreak Host — FW 5.05 / 6.72 – 13.52**
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue)](https://code-name-in-b.github.io/ps4jb/)
@@ -32,6 +30,13 @@ Cache rules baked into the design:
 - `cache.html` runs `history.replaceState('index.html')` and **always continues on its own** (`openHost`) once the cache is ready — nobody gets parked on the installer.
 - The host index never bounces back: a failed first install escapes with `?skipcache=1` and runs from the network instead of ping-ponging.
 - GoldHEN lives inside each host directory, so every `fetch()` in the chains is directory-local.
+- **No images ship at all.** The old `background.jpg` was removed to make first-install cache downloads fast; the backdrop is a pure-CSS purple glow and the theme needs no downloads beyond code.
+
+### UI
+
+- Arabic RTL interface (`dir="rtl"`), CRT scanline overlay, alnafar purple theme — all in `style.css`.
+- Fluid scaling for any console/TV size: `rem` root font-size steps through viewport media-query buckets (phone → 720p → 1080p → 4K). PS4 WebKit constraints (no `var()`, no `clamp()`, no grid, no external fonts) are enforced page-wide.
+- The store footer stays visible on every page and every size: **الشاردة للإلكترونيات**, both branches (**شارع القضائية** & **شارع طرابلس**) and the phone number.
 
 ### Supported Firmwares
 

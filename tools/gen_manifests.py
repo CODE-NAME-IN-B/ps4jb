@@ -32,7 +32,7 @@ HOSTS = {
     "slopkit": ["core.js?v=10"],
 }
 
-SHARED = ["../style.css", "../background.jpg"]
+SHARED = ["../style.css"]
 NAV_LABELS = {
     "505": "WebKit + BPF",
     "672": "jb",

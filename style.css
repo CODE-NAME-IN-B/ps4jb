@@ -40,9 +40,13 @@ html::-webkit-scrollbar { display: none; }
 body {
   width: 100%;
   min-height: 100vh;
-  background: #0F0F23 url('background.jpg') no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed;
+  /* Imageless backdrop: the old background.jpg sat at the top of every
+     manifest and slowed first-install cache downloads. A layered purple
+     glow recreates the mood with zero bytes and zero requests. Old WebKit
+     not knowing radial-gradient() just drops the line and keeps the solid
+     color — and #0F0F23 is painted again at the end of each fallback. */
+  background: -webkit-radial-gradient(50% 0%, 100% 60%, rgba(124,58,237,0.22) 0%, rgba(124,58,237,0) 60%), #0F0F23;
+  background: radial-gradient(100% 60% at 50% 0%, rgba(124,58,237,0.22) 0%, rgba(124,58,237,0) 60%), #0F0F23;
   color: #E2E8F0;
   font-family: 'Noto Kufi Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
   display: -webkit-flex;
@@ -419,6 +423,39 @@ body::before {
   -moz-user-select: all;
   user-select: all;
 }
+
+/* ---------- Two branch addresses ---------- */
+.store-branches {
+  width: 100%;
+  max-width: 46rem;
+  margin: 0.1rem auto 0.3rem;
+}
+.store-branch {
+  display: block;
+  padding: 0.14rem 0;
+  color: #CBD5E1;
+  font-size: 0.68rem;
+  line-height: 1.55;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.branch-tag {
+  display: inline-block;
+  padding: 0.02rem 0.5rem;
+  margin-inline-end: 0.4rem;
+  border: 1px solid rgba(124,58,237,0.4);
+  border-radius: 999px;
+  color: #A78BFA;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  vertical-align: 0.06rem;
+  white-space: nowrap;
+}
+.store-branch .store-addr {
+  display: inline;
+  margin: 0;
+  max-width: none;
+}
 .store-meta {
   font-size: 0.62rem;
   color: #94A3B8;
@@ -444,7 +481,8 @@ body::before {
 @media (min-height: 800px) {
   #footer { padding: 0.8rem 1rem; }
   .store-name { font-size: 1.15rem; }
-  .store-addr  { font-size: 0.76rem; }
+  .store-branch, .store-addr { font-size: 0.76rem; }
+  .branch-tag  { font-size: 0.68rem; }
   .store-phone { font-size: 1.2rem; }
   .store-meta  { font-size: 0.7rem; }
   #footer a    { font-size: 0.76rem; }
@@ -452,14 +490,17 @@ body::before {
 @media (min-height: 1000px), (min-width: 1900px) {
   #footer { padding: 1rem 1.25rem; }
   .store-name { font-size: 1.4rem; }
-  .store-addr  { font-size: 0.88rem; max-width: 56rem; }
+  .store-branch, .store-addr { font-size: 0.88rem; }
+  .branch-tag  { font-size: 0.78rem; }
+  .store-branches { max-width: 56rem; }
   .store-phone { font-size: 1.45rem; }
   .store-meta  { font-size: 0.8rem; }
   #footer a    { font-size: 0.82rem; }
 }
 @media (min-height: 1400px), (min-width: 2560px) {
   .store-name { font-size: 1.75rem; }
-  .store-addr  { font-size: 1.05rem; }
+  .store-branch, .store-addr { font-size: 1.05rem; }
+  .branch-tag  { font-size: 0.95rem; }
   .store-phone { font-size: 1.85rem; }
   .store-meta  { font-size: 0.95rem; }
   #footer a    { font-size: 0.98rem; }
@@ -467,7 +508,8 @@ body::before {
 @media (max-width: 340px) {
   #footer { padding: 0.55rem 0.6rem; }
   .store-name { font-size: 0.85rem; }
-  .store-addr  { font-size: 0.6rem; }
+  .store-branch, .store-addr { font-size: 0.6rem; }
+  .branch-tag  { font-size: 0.52rem; }
   .store-phone { font-size: 0.9rem; }
   .store-meta  { font-size: 0.54rem; }
   #footer a    { font-size: 0.58rem; }
@@ -631,9 +673,8 @@ body::before {
 a { color: #C4B5FD; cursor: pointer; }
 a:hover { color: #F43F5E; }
 
-/* ==========================================================================
-   Landscape phone — keep vertical space tight
-   ========================================================================== */
+/* Landscape phone — keep vertical space tight. Store data stays visible
+   (name + both branches + phone); only the metadata line is dropped. */
 @media (max-height: 460px) and (orientation: landscape) {
   html { font-size: 13px; }
   #brand { padding: 0.4rem 0.8rem; }
@@ -643,7 +684,7 @@ a:hover { color: #F43F5E; }
   #msgs { font-size: 1rem; margin-bottom: 0.4rem; }
   .steps { display: none !important; }
   #footer { padding: 0.35rem 0.6rem; }
-  .store-addr, .store-meta { display: none; }
+  .store-meta { display: none; }
 }
 
 /* ==========================================================================
