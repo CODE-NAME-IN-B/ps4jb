@@ -22,7 +22,12 @@
   var skipRe = /[?&]skipcache=1(\D|$)/;
   var skip = skipRe.test(location.search);
   var ac = window.applicationCache;
-  if (!skip && supported && ac && ac.status === 0) {
+  /* localStorage flag follows cache.html: it flips to 'yes' on a real
+     completion. Without this guard, a page that reports UNCACHED right
+     after a finished install would restart the installer forever. */
+  var installed = false;
+  try { installed = localStorage.cached900 === 'yes'; } catch (e) {}
+  if (!skip && !installed && supported && ac && ac.status === 0) {
     window.location.replace('cache.html');
   }
 })();

@@ -38,7 +38,7 @@ try { history.replaceState(null, null, 'index.html'); } catch (e) {}
     <h2>خطوات التشغيل على PS4</h2>
     <ol>
       <li id="st1">اترك هذه الصفحة حتى يكتمل التحميل 100%</li>
-      <li id="st2">أغلق المتصفح بالكامل (OPTIONS ثم Exit)</li>
+      <li id="st2">أغلق المتصفح فقط (OPTIONS ثم Exit) — لا تغلق الأنترنت</li>
       <li id="st3">افتح المتصفح ودخل نفس الرابط — GoldHEN سيبدأ تلقائياً</li>
     </ol>
   </div>
@@ -141,14 +141,14 @@ try { history.replaceState(null, null, 'index.html'); } catch (e) {}
       setChip('جاري التثبيت', 'warn');
     }
     setSub('لا تغلق المتصفح — انتظر حتى يكتمل التحميل 100%');
-    showSteps(1);
+    /* The steps box only appears after real completion — showing it during
+       the download would highlight "close the browser" while installing. */
   }
 
   function onWaiting() {
     if (done || going) return;
     setChip('جاري التثبيت', 'warn');
     setSub('لا تغلق المتصفح — انتظر حتى يكتمل التحميل 100%');
-    showSteps(1);
   }
 
   function onReady() {
@@ -159,6 +159,16 @@ try { history.replaceState(null, null, 'index.html'); } catch (e) {}
 
   function onFail() {
     if (done || going) return;
+    if (ac.status === IDLE || ac.status === UPDATEREADY) {
+      /* The cache IS installed: this error is only the harmless background
+         manifest recheck (network blip, or the browser reopened while the
+         console was offline). Never show "install failed" over a working
+         cache — that was the "error in cache loading" on 13.52 after
+         closing and reopening the browser. */
+      done = true;
+      openHost('الكاش جاهز — جاري فتح المضيف');
+      return;
+    }
     try { localStorage.cached900 = 'no'; } catch (e) {}
     setChip('فشل', 'bad');
     setState('تعذر تثبيت الكاش', 'bad');
@@ -220,14 +230,12 @@ try { history.replaceState(null, null, 'index.html'); } catch (e) {}
       openHost('تم تحديث الكاش — جاري فتح المضيف');
     } else if (ac.status === CHECKING || ac.status === DOWNLOADING) {
       onWaiting();
-      showSteps(1);
-    } else {
+      } else {
       /* UNCACHED or OBSOLETE: downloading starts automatically for this
          document; if the console stays silent the error/obsolete handler
          covers it. */
       onWaiting();
-      showSteps(1);
-    }
+      }
   }
 })();
 </script>
